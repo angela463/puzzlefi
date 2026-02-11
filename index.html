@@ -1,0 +1,1428 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Puzzlefi — Calm, Sci-Fi Puzzles</title>
+  <meta name="description" content="Puzzlefi: calming puzzles with a low-budget sci-fi glow. Focus, unwind, and flow." />
+
+  <style>
+    :root{
+      --bg:#06070b;
+      --ink:#f3f5ff;
+      --muted: rgba(243,245,255,.72);
+      --glass: rgba(255,255,255,.06);
+      --line: rgba(255,255,255,.12);
+
+      --a1:#78ffd6; /* mint */
+      --a2:#a78bfa; /* violet */
+      --a3:#60a5fa; /* blue */
+      --a4:#fb7185; /* pink */
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui;
+      color: var(--ink);
+      background: radial-gradient(1200px 900px at 30% -10%, rgba(167,139,250,.24), transparent 55%),
+                  radial-gradient(900px 700px at 110% 15%, rgba(96,165,250,.18), transparent 45%),
+                  radial-gradient(900px 700px at 60% 120%, rgba(120,255,214,.12), transparent 40%),
+                  linear-gradient(180deg, #05060a 0%, #070812 45%, #04040a 100%);
+      overflow-x:hidden;
+    }
+
+    #stars{ position:fixed; inset:0; z-index:-3; opacity:.85; }
+
+    .scanlines{
+      position:fixed; inset:0; z-index:-2; pointer-events:none;
+      background: repeating-linear-gradient(to bottom,
+        rgba(255,255,255,.035),
+        rgba(255,255,255,.035) 1px,
+        rgba(0,0,0,0) 3px,
+        rgba(0,0,0,0) 6px
+      );
+      mix-blend-mode: overlay;
+      opacity:.18;
+    }
+
+    .noise{
+      position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+      opacity:.08;
+      mix-blend-mode: overlay;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    .wrap{ max-width:1100px; margin:0 auto; padding: 22px 18px 60px; }
+
+    .nav{
+      display:flex; align-items:center; justify-content:space-between; gap:14px;
+      padding: 10px 0 14px;
+      position:sticky; top:0;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(to bottom, rgba(6,7,11,.75), rgba(6,7,11,.28));
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      z-index:50;
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      letter-spacing:.06em; text-transform: uppercase; font-size: 12px;
+      color: rgba(243,245,255,.9);
+    }
+    .logo{
+      width:34px; height:34px; border-radius:10px;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(120,255,214,.6), transparent 60%),
+        radial-gradient(circle at 70% 30%, rgba(167,139,250,.55), transparent 55%),
+        radial-gradient(circle at 50% 80%, rgba(96,165,250,.4), transparent 60%),
+        rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+      position:relative; overflow:hidden;
+    }
+    .logo::after{
+      content:""; position:absolute; inset:-40%;
+      background: conic-gradient(from 180deg, transparent, rgba(255,255,255,.12), transparent 45%);
+      animation: spin 6s linear infinite; opacity:.7;
+    }
+    @keyframes spin{ to{ transform:rotate(360deg);} }
+
+    .navRight{ display:flex; gap:14px; align-items:center; }
+    .navlinks{ display:flex; gap:14px; align-items:center; font-size:13px; color: rgba(243,245,255,.75); }
+    .navlinks a{ padding:8px 10px; border-radius:999px; }
+    .navlinks a:hover{ background: rgba(255,255,255,.06); color: rgba(243,245,255,.92); }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(243,245,255,.92);
+      box-shadow: 0 18px 50px rgba(0,0,0,.30);
+      font-size: 13px;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      cursor:pointer;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.08); }
+    .btn.primary{
+      border-color: rgba(120,255,214,.35);
+      background: linear-gradient(135deg, rgba(120,255,214,.18), rgba(167,139,250,.14));
+    }
+    .btn.primary:hover{ border-color: rgba(120,255,214,.55); }
+
+    .hero{
+      padding: 46px 0 26px;
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:22px;
+      align-items:center;
+    }
+    @media (max-width: 880px){
+      .hero{ grid-template-columns: 1fr; padding-top: 26px; }
+    }
+
+    .kicker{
+      display:inline-flex; gap:10px; align-items:center;
+      font-size:12px; color: rgba(243,245,255,.78);
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      padding: 8px 12px; border-radius: 999px; width: fit-content;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:99px;
+      background: radial-gradient(circle, var(--a1), rgba(120,255,214,.2));
+      box-shadow: 0 0 16px rgba(120,255,214,.55);
+    }
+
+    h1{
+      margin:14px 0 12px;
+      font-size: clamp(38px, 4.7vw, 58px);
+      line-height: 1.02;
+      letter-spacing:-.03em;
+    }
+    .grad{
+      background: linear-gradient(90deg, rgba(243,245,255,1), rgba(120,255,214,.95), rgba(167,139,250,.95), rgba(96,165,250,.95));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+      filter: drop-shadow(0 10px 28px rgba(0,0,0,.35));
+    }
+    .tagline{
+      display:inline-block;
+      font-size: 0.72em;
+      font-weight: 500;
+      opacity: 0.75;
+      margin-top: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .sub{
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--muted);
+      max-width: 56ch;
+    }
+
+    .ctaRow{ display:flex; gap:12px; align-items:center; margin-top: 18px; flex-wrap:wrap; }
+    .micro{ font-size:12px; color: rgba(243,245,255,.62); }
+
+    /* right-side terminal */
+    .terminal{
+      border:1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius: 22px;
+      overflow:hidden;
+      box-shadow: 0 30px 100px rgba(0,0,0,.45);
+      position:relative;
+    }
+    .termTop{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
+      gap:10px;
+    }
+    .lights{ display:flex; gap:7px; }
+    .light{
+      width:10px; height:10px; border-radius:99px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+    }
+    .termTitle{
+      font-size:12px;
+      color: rgba(243,245,255,.75);
+      letter-spacing:.22em;
+      text-transform: uppercase;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      text-align:center;
+      flex:1;
+    }
+    .termTop .leftSlot{ width:56px; display:flex; align-items:center; gap:8px; }
+    .termTop .rightSlot{ width:120px; display:flex; justify-content:flex-end; }
+
+    /* BOOT DEMO AREA */
+    .bootStage{
+      position:relative;
+      border-top: 1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.20);
+      min-height: 420px;
+      overflow:hidden;
+    }
+
+    /* background demo canvas sits behind the boot text */
+    canvas#demoCanvas{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      opacity:.78;
+      filter: saturate(1.1) contrast(1.05);
+    }
+
+    /* vignette + subtle haze so text reads */
+    .bootStage::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(900px 520px at 50% 30%, rgba(0,0,0,.12), rgba(0,0,0,.62)),
+        radial-gradient(600px 380px at 25% 20%, rgba(120,255,214,.10), transparent 60%),
+        radial-gradient(640px 420px at 85% 25%, rgba(167,139,250,.10), transparent 62%);
+      pointer-events:none;
+      z-index:2;
+    }
+
+    /* local scanlines in the box, like the screenshot */
+    .bootStage::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,.04),
+        rgba(255,255,255,.04) 1px,
+        rgba(0,0,0,0) 3px,
+        rgba(0,0,0,0) 6px
+      );
+      opacity:.10;
+      mix-blend-mode: overlay;
+      pointer-events:none;
+      z-index:3;
+    }
+
+    .bootOverlay{
+      position:relative;
+      z-index:4;
+      padding: 18px 18px 16px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      color: rgba(243,245,255,.86);
+    }
+
+    .bootLines{
+      margin:0;
+      padding:0;
+      list-style:none;
+      font-size: 12.5px;
+      line-height:1.55;
+    }
+    .bootLines li{ margin: 2px 0; }
+    .bootLines .prompt{ color: rgba(243,245,255,.60); }
+    .bootLines .ok{ color: rgba(120,255,214,.85); }
+
+    .bootReady{
+      margin-top: 14px;
+      letter-spacing:.18em;
+      font-size: 12px;
+      color: rgba(243,245,255,.78);
+    }
+
+    .bootFooter{
+      position:absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 12px;
+      z-index:5;
+      display:flex;
+      gap:10px;
+      align-items:flex-end;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+
+    .demoOptions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    .chip{
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color: rgba(243,245,255,.82);
+      padding: 8px 10px;
+      cursor:pointer;
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+      letter-spacing:.04em;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+      user-select:none;
+    }
+    .chip:hover{
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.06);
+    }
+    .chip.active{
+      border-color: rgba(120,255,214,.45);
+      background: linear-gradient(135deg, rgba(120,255,214,.14), rgba(167,139,250,.10));
+      color: rgba(243,245,255,.92);
+      box-shadow: 0 18px 40px rgba(0,0,0,.18);
+    }
+
+    .demoStats{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      font-family: ui-monospace, monospace;
+      font-size: 12px;
+      color: rgba(243,245,255,.72);
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+    }
+    .demoStats b{ color: rgba(120,255,214,.9); font-weight:650; }
+
+    /* sections below unchanged */
+    .grid3{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 22px;
+    }
+    @media (max-width: 900px){
+      .grid3{ grid-template-columns:1fr; }
+      .navlinks{ display:none; }
+      .navRight .audioToggle{ display:inline-flex; }
+      .termTop .leftSlot{ width:40px; }
+    }
+
+    .card{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+      border-radius: 18px;
+      padding: 16px 16px 14px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+    .card h3{ margin: 0 0 8px; font-size: 15px; letter-spacing: -.01em; }
+    .card p{ margin:0; color: rgba(243,245,255,.72); line-height:1.55; font-size: 13.5px; }
+
+    .section{
+      margin-top: 28px;
+      padding-top: 26px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .section h2{ margin:0 0 10px; font-size: 20px; letter-spacing: -.01em; }
+    .section .lead{ margin:0; color: rgba(243,245,255,.70); line-height:1.6; max-width: 70ch; }
+
+    .features{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    @media (max-width: 900px){ .features{ grid-template-columns:1fr; } }
+
+    .pill{
+      display:flex; gap:12px; align-items:flex-start;
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      cursor: default;
+    }
+    .icon{
+      width:20px; height:20px; border-radius: 6px;
+      border:1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(120,255,214,.4), transparent 65%),
+        radial-gradient(circle at 70% 30%, rgba(167,139,250,.3), transparent 65%),
+        rgba(255,255,255,.04);
+      flex: 0 0 auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+    }
+    .pill h4{ margin:0 0 4px; font-size: 14px; }
+    .pill p{ margin:0; color: rgba(243,245,255,.70); font-size:13px; line-height:1.55; }
+
+    footer{
+      margin-top: 26px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,.08);
+      color: rgba(243,245,255,.55);
+      font-size:12px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .glowline{
+      height:1px;
+      background: linear-gradient(90deg, transparent, rgba(120,255,214,.35), rgba(167,139,250,.25), transparent);
+      opacity:.8;
+      margin-top: 18px;
+    }
+
+    /* ===== Waitlist Modal ===== */
+    .modalOverlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.62);
+      backdrop-filter: blur(10px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      z-index: 999;
+    }
+    .modalOverlay.isOpen{ display:flex; }
+
+    .modal{
+      width: min(560px, 100%);
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      box-shadow: 0 30px 120px rgba(0,0,0,.55);
+      overflow: hidden;
+      position: relative;
+      transform: translateY(6px);
+      animation: pop .14s ease-out forwards;
+    }
+    @keyframes pop { to { transform: translateY(0); } }
+
+    .modalHeader{
+      display:flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.25);
+    }
+
+    .modalTitle{
+      font-size: 12px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(243,245,255,.85);
+    }
+
+    .modalClose{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color: rgba(243,245,255,.9);
+      border-radius: 12px;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+    .modalClose:hover{ background: rgba(255,255,255,.10); }
+
+    .modalBody{ padding: 16px; }
+
+    .modalBody p{
+      margin: 0 0 12px;
+      color: rgba(243,245,255,.70);
+      line-height: 1.55;
+      font-size: 13.5px;
+    }
+
+    .modalForm{
+      display:flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modalInput{
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.28);
+      color: rgba(243,245,255,.92);
+      outline: none;
+    }
+    .modalInput::placeholder{ color: rgba(243,245,255,.45); }
+    .modalInput:focus{
+      border-color: rgba(120,255,214,.48);
+      box-shadow: 0 0 0 4px rgba(120,255,214,.10);
+    }
+
+    .checkRow{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      padding: 12px;
+      border-radius: 16px;
+    }
+    .checkRow input{ margin-top: 3px; }
+
+    .checkText{
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: rgba(243,245,255,.70);
+    }
+    .checkText a{
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      color: rgba(243,245,255,.85);
+    }
+
+    .modalActions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+      margin-top: 6px;
+    }
+
+    .modalMsg{
+      font-size: 12px;
+      color: rgba(243,245,255,.65);
+      margin-right: auto;
+    }
+    .modalMsg.ok{ color: rgba(120,255,214,.9); }
+    .modalMsg.err{ color: rgba(251,113,133,.95); }
+
+    /* Ambient audio toggle — volume icon, slash when muted */
+    .audioToggle{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:36px;
+      height:36px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(243,245,255,.85);
+      cursor:pointer;
+      transition: background .12s ease, border-color .12s ease;
+      padding:0;
+    }
+    .audioToggle:hover{
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.22);
+    }
+    .audioToggle svg{ width:18px; height:18px; display:block; }
+    .audioToggle .iconMuted{ display:none; }
+    .audioToggle.muted .iconMuted{ display:block; }
+    .audioToggle.muted .iconVolume{ display:none; }
+
+    /* Prompt when autoplay is blocked (Chrome etc.) */
+    .audioPrompt{
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 20px;
+      border-radius: 999px;
+      border: 1px solid rgba(120,255,214,.35);
+      background: rgba(6,7,11,.92);
+      backdrop-filter: blur(10px);
+      color: rgba(243,245,255,.9);
+      font-size: 13px;
+      letter-spacing: .02em;
+      z-index: 100;
+      cursor: pointer;
+      transition: opacity .25s ease, transform .25s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+    }
+    .audioPrompt:hover{ border-color: rgba(120,255,214,.55); }
+    .audioPrompt.isHidden{
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-50%) translateY(8px);
+    }
+  </style>
+</head>
+
+<body>
+  <audio id="ambient" loop preload="auto" aria-label="Ambient background music">
+    <source src="./public/audio/ambiantsound.mp3" type="audio/mpeg">
+  </audio>
+  <canvas id="stars"></canvas>
+  <div class="scanlines"></div>
+  <div class="noise"></div>
+
+  <div class="audioPrompt" id="audioPrompt" role="status">Click anywhere to start ambient sound</div>
+
+  <div class="wrap">
+    <div class="nav">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <div style="font-weight:650; letter-spacing:.09em;">PUZZLEFI</div>
+          <div style="opacity:.65; margin-top:2px;">calm puzzles • sci-fi glow</div>
+        </div>
+      </div>
+
+      <div class="navRight">
+        <button type="button" class="audioToggle" id="audioToggle" aria-label="Mute ambient sound" title="Click to mute">
+          <span class="iconVolume" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </span>
+          <span class="iconMuted" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+          </span>
+        </button>
+        <div class="navlinks">
+          <a href="#features">Features</a>
+          <a href="#how">How it feels</a>
+          <a class="btn primary" href="#waitlist">Join the waitlist</a>
+        </div>
+      </div>
+    </div>
+
+    <section class="hero">
+      <div>
+        <div class="kicker"><span class="dot"></span> new name, same calm — now with a sci-fi vibe</div>
+        <h1>
+          <span class="grad">Puzzlefi</span><br/>
+          <span class="tagline">calming puzzles for your inner space station.</span>
+        </h1>
+        <p class="sub">
+          Unwind with gentle, satisfying puzzles wrapped in a low-budget sci-fi aesthetic —
+          black & white UI, galaxy glow, and just enough "retro console" to feel iconic.
+        </p>
+
+        <div class="ctaRow">
+          <a class="btn primary" href="#waitlist">Join the waitlist</a>
+          <span class="micro">Prototype demo • not interactive yet</span>
+        </div>
+
+        <div class="glowline"></div>
+
+        <div class="grid3">
+          <div class="card">
+            <h3>Calm focus</h3>
+            <p>Designed to feel like a slow exhale — puzzles that soothe, not spike your stress.</p>
+          </div>
+          <div class="card">
+            <h3>Sci-fi minimal</h3>
+            <p>Monochrome base + galaxy accents. Retro scanlines. A gentle "ship console" mood.</p>
+          </div>
+          <div class="card">
+            <h3>Quick sessions</h3>
+            <p>Short sessions, soft feedback, and satisfying progress without pressure.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOOT box look, with background demo + 3 options -->
+      <aside class="terminal" aria-label="Puzzlefi boot demo console">
+        <div class="termTop">
+          <div class="leftSlot" aria-hidden="true">
+            <span class="light"></span><span class="light"></span><span class="light"></span>
+          </div>
+
+          <div class="termTitle">PUZZLEFI / BOOT</div>
+
+          <div class="rightSlot">
+            <button class="btn" id="runDemoBtn" type="button">Run demo</button>
+          </div>
+        </div>
+
+        <div class="bootStage">
+          <canvas id="demoCanvas" aria-label="Background demo canvas"></canvas>
+
+          <div class="bootOverlay">
+            <ul class="bootLines">
+              <li><span class="prompt">&gt;</span> scanning sector…</li>
+              <li><span class="prompt">&gt;</span> found: calm puzzle signal <span class="ok">✓</span></li>
+              <li><span class="prompt">&gt;</span> rendering: monochrome UI + galaxy glow…</li>
+              <li><span class="prompt">&gt;</span> mission: solve 1 tiny puzzle</li>
+              <li><span class="prompt">&gt;</span> reward: satisfied brain</li>
+            </ul>
+            <div class="bootReady">READY</div>
+          </div>
+
+          <div class="bootFooter">
+            <div class="demoOptions" aria-label="Choose a demo">
+              <button class="chip active" data-demo="tetris" type="button">Stack Signals</button>
+              <button class="chip" data-demo="pipe" type="button">Signal Router</button>
+              <button class="chip" data-demo="match" type="button">Star Match</button>
+            </div>
+
+            <div class="demoStats" aria-label="Demo stats">
+              <span>score</span><b id="statScore">0</b>
+              <span>lines</span><b id="statLines">0</b>
+              <span>level</span><b id="statLevel">1</b>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section" id="features">
+      <h2>Features</h2>
+      <p class="lead">
+        Puzzlefi is built around calming puzzle flow — small wins, gentle visuals, and a sci-fi skin that feels nostalgic.
+      </p>
+
+      <div class="features">
+        <div class="pill">
+          <div class="icon" aria-hidden="true"></div>
+          <div>
+            <h4>Calming puzzle loop</h4>
+            <p>Short sessions, soft feedback, and "one more" momentum without the chaos.</p>
+          </div>
+        </div>
+
+        <div class="pill">
+          <div class="icon" aria-hidden="true"></div>
+          <div>
+            <h4>Galaxy glow accents</h4>
+            <p>Subtle neon gradients on a clean black/white base — like a thrift-store sci-fi set.</p>
+          </div>
+        </div>
+
+        <div class="pill">
+          <div class="icon" aria-hidden="true"></div>
+          <div>
+            <h4>Multiple puzzle modes</h4>
+            <p>Stacking, routing, matching — built for calm, not chaos. (Prototype preview here.)</p>
+          </div>
+        </div>
+
+        <div class="pill">
+          <div class="icon" aria-hidden="true"></div>
+          <div>
+            <h4>Progress that feels good</h4>
+            <p>Track streaks and skill in a non-judgy way — encouraging, not demanding.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <h2>How it feels</h2>
+      <p class="lead">
+        Like a quiet spaceship hallway… but you're holding a puzzle. Calm, tiny dopamine, soft sci-fi ambience.
+      </p>
+
+      <div class="grid3" style="margin-top:14px;">
+        <div class="card">
+          <h3>Before work</h3>
+          <p>Two minutes to settle your brain. Start focused, not frantic.</p>
+        </div>
+        <div class="card">
+          <h3>During breaks</h3>
+          <p>A reset that doesn't scroll you into oblivion. Quiet puzzles, soft progress.</p>
+        </div>
+        <div class="card">
+          <h3>Before bed</h3>
+          <p>Low stimulation + satisfying patterns. End the day gently.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div>© <span id="year"></span> Puzzlefi</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="#features" class="micro">Features</a>
+        <a href="#waitlist" class="micro">Waitlist</a>
+        <a href="#" class="micro" id="privacyFooter">Privacy</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ===== Waitlist Modal Markup ===== -->
+  <div class="modalOverlay" id="waitlistModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="waitlistTitle">
+      <div class="modalHeader">
+        <div class="modalTitle" id="waitlistTitle">PUZZLEFI / WAITLIST</div>
+        <button class="modalClose" type="button" id="waitlistClose" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="modalBody">
+        <p>
+          Enter your email to get early access. We'll only email you about Puzzlefi updates.
+          <b>We won't spam you</b> or sell your email to third parties.
+        </p>
+
+        <form class="modalForm" id="waitlistModalForm">
+          <input class="modalInput" type="email" id="waitlistEmail" placeholder="you@domain.com" required />
+
+          <label class="checkRow">
+            <input type="checkbox" id="waitlistConsent" required />
+            <span class="checkText">
+              I agree to the <a href="#" id="privacyLink">Privacy Policy</a> and <a href="#" id="termsLink">User Agreement</a>,
+              and I understand Puzzlefi will email me about early access and updates.
+            </span>
+          </label>
+
+          <div class="modalActions">
+            <span class="modalMsg" id="waitlistModalMsg" aria-live="polite"></span>
+            <button class="btn" type="button" id="waitlistCancel">Cancel</button>
+            <button class="btn primary" type="submit">Join waitlist</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---- starfield background (no libraries) ----
+    const starsCanvas = document.getElementById('stars');
+    const starsCtx = starsCanvas.getContext('2d');
+
+    let sw, sh, stars;
+    function resizeStars(){
+      sw = starsCanvas.width = window.innerWidth * devicePixelRatio;
+      sh = starsCanvas.height = window.innerHeight * devicePixelRatio;
+      stars = Array.from({length: Math.min(260, Math.floor((window.innerWidth * window.innerHeight)/6000))}, () => ({
+        x: Math.random()*sw,
+        y: Math.random()*sh,
+        r: (Math.random()*1.2 + 0.2) * devicePixelRatio,
+        v: (Math.random()*0.35 + 0.05) * devicePixelRatio,
+        a: Math.random()*0.6 + 0.25
+      }));
+    }
+    window.addEventListener('resize', resizeStars);
+    resizeStars();
+
+    function drawStars(){
+      starsCtx.clearRect(0,0,sw,sh);
+      for(const s of stars){
+        s.y += s.v;
+        if(s.y > sh){ s.y = -10; s.x = Math.random()*sw; }
+        starsCtx.beginPath();
+        starsCtx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        starsCtx.fillStyle = `rgba(243,245,255,${s.a})`;
+        starsCtx.fill();
+      }
+      requestAnimationFrame(drawStars);
+    }
+    drawStars();
+
+    // ===== Waitlist Modal Logic =====
+    const modal = document.getElementById("waitlistModal");
+    const modalClose = document.getElementById("waitlistClose");
+    const modalCancel = document.getElementById("waitlistCancel");
+    const modalForm = document.getElementById("waitlistModalForm");
+    const modalMsg = document.getElementById("waitlistModalMsg");
+    const modalEmail = document.getElementById("waitlistEmail");
+    const modalConsent = document.getElementById("waitlistConsent");
+
+    function openWaitlistModal(){
+      modal.classList.add("isOpen");
+      modal.setAttribute("aria-hidden", "false");
+      modalMsg.textContent = "";
+      setTimeout(() => modalEmail.focus(), 60);
+    }
+    function closeWaitlistModal(){
+      modal.classList.remove("isOpen");
+      modal.setAttribute("aria-hidden", "true");
+    }
+
+    document.querySelectorAll('a[href="#waitlist"]').forEach(a => {
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        openWaitlistModal();
+      });
+    });
+
+    modalClose.addEventListener("click", closeWaitlistModal);
+    modalCancel.addEventListener("click", closeWaitlistModal);
+
+    modal.addEventListener("click", (e) => {
+      if(e.target === modal) closeWaitlistModal();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape" && modal.classList.contains("isOpen")) closeWaitlistModal();
+    });
+
+    document.getElementById("privacyLink").addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("Privacy Policy placeholder — add a real page later.");
+    });
+    document.getElementById("termsLink").addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("User Agreement placeholder — add a real page later.");
+    });
+    document.getElementById("privacyFooter").addEventListener("click", (e) => {
+      e.preventDefault();
+      alert("Privacy placeholder — add a real page later.");
+    });
+
+    modalForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      modalMsg.className = "modalMsg";
+
+      const email = modalEmail.value.trim();
+      const consent = modalConsent.checked;
+
+      if(!email){
+        modalMsg.textContent = "Please enter an email.";
+        modalMsg.classList.add("err");
+        return;
+      }
+      if(!consent){
+        modalMsg.textContent = "Please agree to the Privacy Policy and User Agreement.";
+        modalMsg.classList.add("err");
+        return;
+      }
+
+      modalMsg.textContent = "✔ You're on the waitlist (demo).";
+      modalMsg.classList.add("ok");
+
+      setTimeout(() => {
+        modalForm.reset();
+        closeWaitlistModal();
+      }, 1100);
+    });
+
+    // ===== BOOT DEMO BACKGROUND (run/stop + 3 options) =====
+    const demoCanvas = document.getElementById("demoCanvas");
+    const dctx = demoCanvas.getContext("2d");
+
+    function fitDemoCanvas(){
+      const rect = demoCanvas.getBoundingClientRect();
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      demoCanvas.width = Math.floor(rect.width * dpr);
+      demoCanvas.height = Math.floor(rect.height * dpr);
+      dctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener("resize", () => {
+      fitDemoCanvas();
+      renderStaticPreview();
+    });
+    fitDemoCanvas();
+
+    const runDemoBtn = document.getElementById("runDemoBtn");
+    const statScore = document.getElementById("statScore");
+    const statLines = document.getElementById("statLines");
+    const statLevel = document.getElementById("statLevel");
+
+    const chips = Array.from(document.querySelectorAll(".chip"));
+
+    let selectedDemo = "tetris";
+    let playing = false;
+    let rafId = null;
+    let lastTs = 0;
+
+    function setStats(score, lines, level){
+      statScore.textContent = String(score);
+      statLines.textContent = String(lines);
+      statLevel.textContent = String(level);
+    }
+
+    // ---------- Tetris-like background demo (drops + stacks + loops) ----------
+    const COLORS = {
+      0: "rgba(0,0,0,0)",
+      1: "rgba(243,245,255,.78)",
+      2: "rgba(120,255,214,.78)",
+      3: "rgba(167,139,250,.72)",
+      4: "rgba(96,165,250,.70)",
+      5: "rgba(251,113,133,.60)"
+    };
+
+    const SHAPES = {
+      I: [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],
+      O: [[1,1],[1,1]],
+      T: [[0,1,0],[1,1,1],[0,0,0]],
+      S: [[0,1,1],[1,1,0],[0,0,0]],
+      Z: [[1,1,0],[0,1,1],[0,0,0]],
+      J: [[1,0,0],[1,1,1],[0,0,0]],
+      L: [[0,0,1],[1,1,1],[0,0,0]],
+    };
+    const PIECE_COLOR = { I:2, O:1, T:3, S:4, Z:4, J:1, L:3 };
+
+    const SHOW_SEQ = [
+      {key:"T", x:4, r:0},{key:"L", x:6, r:0},{key:"J", x:2, r:0},{key:"O", x:4, r:0},
+      {key:"S", x:6, r:0},{key:"Z", x:2, r:0},{key:"I", x:4, r:1},{key:"T", x:4, r:1},
+      {key:"L", x:7, r:1},{key:"J", x:1, r:1},{key:"O", x:4, r:0},{key:"I", x:0, r:0},
+    ];
+    let showIndex = 0;
+
+    const COLS = 10, ROWS = 18;
+
+    const TET = {
+      board: [],
+      cur: null,
+      score: 0,
+      lines: 0,
+      level: 1,
+      dropMs: 260,
+      moveMs: 120,
+      accDrop: 0,
+      accMove: 0,
+      pieceCount: 0,
+      lastCell: 0
+    };
+
+    function makeBoard(){
+      return Array.from({length: ROWS}, () => Array.from({length: COLS}, () => 0));
+    }
+    function clone(m){ return m.map(r => r.slice()); }
+
+    function rotateCW(mat){
+      const H = mat.length;
+      const W = mat[0].length;
+      const res = Array.from({length: W}, () => Array.from({length: H}, () => 0));
+      for(let y=0; y<H; y++){
+        for(let x=0; x<W; x++){
+          res[x][H - 1 - y] = mat[y][x];
+        }
+      }
+      return res;
+    }
+    function applyRot(shape, times){
+      let s = clone(shape);
+      for(let i=0;i<times;i++) s = rotateCW(s);
+      return s;
+    }
+
+    function collides(piece, dx, dy, shape){
+      for(let y=0; y<shape.length; y++){
+        for(let x=0; x<shape[y].length; x++){
+          if(!shape[y][x]) continue;
+          const nx = piece.x + x + dx;
+          const ny = piece.y + y + dy;
+          if(nx < 0 || nx >= COLS || ny >= ROWS) return true;
+          if(ny >= 0 && TET.board[ny][nx] !== 0) return true;
+        }
+      }
+      return false;
+    }
+
+    function merge(piece){
+      const s = piece.shape;
+      for(let y=0; y<s.length; y++){
+        for(let x=0; x<s[y].length; x++){
+          if(!s[y][x]) continue;
+          const bx = piece.x + x;
+          const by = piece.y + y;
+          if(by >= 0 && by < ROWS && bx >= 0 && bx < COLS){
+            TET.board[by][bx] = piece.colorId;
+          }
+        }
+      }
+    }
+
+    function clearLines(){
+      let cleared = 0;
+      outer: for(let y=ROWS-1; y>=0; y--){
+        for(let x=0; x<COLS; x++){
+          if(TET.board[y][x] === 0) continue outer;
+        }
+        TET.board.splice(y, 1);
+        TET.board.unshift(Array.from({length: COLS}, () => 0));
+        cleared++;
+        y++;
+      }
+      if(cleared){
+        TET.lines += cleared;
+        TET.score += (cleared === 1 ? 40 : cleared === 2 ? 120 : cleared === 3 ? 300 : 500);
+        TET.level = 1 + Math.floor(TET.lines / 8);
+        TET.dropMs = Math.max(150, 260 - (TET.level-1) * 10);
+      }
+    }
+
+    function nextShowPiece(){
+      const s = SHOW_SEQ[showIndex % SHOW_SEQ.length];
+      showIndex++;
+      const base = SHAPES[s.key];
+      const shape = applyRot(base, s.r);
+      const width = shape[0].length;
+      const x = Math.max(0, Math.min(COLS - width, s.x - Math.floor(width/2)));
+      return {
+        key: s.key,
+        shape,
+        colorId: PIECE_COLOR[s.key] || 1,
+        x,
+        y: -2,
+        targetX: x
+      };
+    }
+
+    function resetTetrisLoop(){
+      TET.board = makeBoard();
+      TET.score = 0;
+      TET.lines = 0;
+      TET.level = 1;
+      TET.dropMs = 260;
+      TET.accDrop = 0;
+      TET.accMove = 0;
+      TET.pieceCount = 0;
+      showIndex = 0;
+      TET.cur = nextShowPiece();
+      setStats(TET.score, TET.lines, TET.level);
+    }
+
+    function stepTetris(dt){
+      TET.accMove += dt;
+      if(TET.accMove >= TET.moveMs){
+        TET.accMove = 0;
+        const p = TET.cur;
+        if(p){
+          if(p.x < p.targetX && !collides(p, 1, 0, p.shape)) p.x += 1;
+          else if(p.x > p.targetX && !collides(p, -1, 0, p.shape)) p.x -= 1;
+        }
+      }
+
+      TET.accDrop += dt;
+      if(TET.accDrop >= TET.dropMs){
+        TET.accDrop = 0;
+        const p = TET.cur;
+        if(!p) return;
+
+        if(!collides(p, 0, 1, p.shape)){
+          p.y += 1;
+        } else {
+          merge(p);
+          clearLines();
+          TET.pieceCount += 1;
+
+          if(TET.pieceCount >= 22 || TET.lines >= 10){
+            resetTetrisLoop();
+            return;
+          }
+          TET.cur = nextShowPiece();
+        }
+
+        setStats(TET.score, TET.lines, TET.level);
+      }
+    }
+
+    function drawBoardToCanvas(){
+      const w = demoCanvas.getBoundingClientRect().width;
+      const h = demoCanvas.getBoundingClientRect().height;
+
+      dctx.clearRect(0,0,w,h);
+
+      dctx.fillStyle = "rgba(0,0,0,.20)";
+      dctx.fillRect(0,0,w,h);
+
+      const cell = Math.floor(Math.min(w / COLS, h / ROWS));
+      const bw = cell * COLS;
+      const bh = cell * ROWS;
+      const ox = Math.floor((w - bw)/2);
+      const oy = Math.floor((h - bh)/2);
+
+      dctx.strokeStyle = "rgba(255,255,255,.05)";
+      for(let x=0; x<=COLS; x++){
+        dctx.beginPath();
+        dctx.moveTo(ox + x*cell, oy);
+        dctx.lineTo(ox + x*cell, oy + bh);
+        dctx.stroke();
+      }
+      for(let y=0; y<=ROWS; y++){
+        dctx.beginPath();
+        dctx.moveTo(ox, oy + y*cell);
+        dctx.lineTo(ox + bw, oy + y*cell);
+        dctx.stroke();
+      }
+
+      function drawCell(x,y,colorId){
+        if(colorId === 0) return;
+        const px = ox + x*cell;
+        const py = oy + y*cell;
+
+        dctx.fillStyle = COLORS[colorId] || COLORS[1];
+        dctx.fillRect(px+1, py+1, cell-2, cell-2);
+
+        dctx.fillStyle = "rgba(255,255,255,.10)";
+        dctx.fillRect(px+2, py+2, cell-4, Math.max(3, cell-8));
+
+        dctx.strokeStyle = "rgba(255,255,255,.10)";
+        dctx.strokeRect(px+1.5, py+1.5, cell-3, cell-3);
+      }
+
+      for(let y=0; y<ROWS; y++){
+        for(let x=0; x<COLS; x++){
+          drawCell(x,y,TET.board[y][x]);
+        }
+      }
+
+      const p = TET.cur;
+      if(p){
+        for(let yy=0; yy<p.shape.length; yy++){
+          for(let xx=0; xx<p.shape[yy].length; xx++){
+            if(!p.shape[yy][xx]) continue;
+            const bx = p.x + xx;
+            const by = p.y + yy;
+            if(by < 0) continue;
+            drawCell(bx, by, p.colorId);
+          }
+        }
+      }
+    }
+
+    function pipeDemoDraw(t){
+      const w = demoCanvas.getBoundingClientRect().width;
+      const h = demoCanvas.getBoundingClientRect().height;
+      dctx.clearRect(0,0,w,h);
+      dctx.fillStyle = "rgba(0,0,0,.20)";
+      dctx.fillRect(0,0,w,h);
+
+      const grid = 24;
+      dctx.strokeStyle = "rgba(255,255,255,.05)";
+      for(let x=0; x<=w; x+=grid){ dctx.beginPath(); dctx.moveTo(x,0); dctx.lineTo(x,h); dctx.stroke(); }
+      for(let y=0; y<=h; y+=grid){ dctx.beginPath(); dctx.moveTo(0,y); dctx.lineTo(w,y); dctx.stroke(); }
+
+      const glow = (Math.sin(t*2.2)+1)/2;
+      dctx.lineWidth = 10;
+      dctx.lineCap = "round";
+
+      const path = [
+        {x: 26, y: h-40},
+        {x: 26, y: h*0.55},
+        {x: w*0.55, y: h*0.55},
+        {x: w*0.55, y: 70},
+        {x: w-34, y: 70},
+      ];
+
+      dctx.strokeStyle = "rgba(243,245,255,.16)";
+      dctx.beginPath();
+      dctx.moveTo(path[0].x, path[0].y);
+      for(let i=1;i<path.length;i++) dctx.lineTo(path[i].x, path[i].y);
+      dctx.stroke();
+
+      dctx.strokeStyle = `rgba(120,255,214,${0.18 + glow*0.34})`;
+      dctx.shadowColor = "rgba(120,255,214,.45)";
+      dctx.shadowBlur = 16;
+      dctx.beginPath();
+      dctx.moveTo(path[0].x, path[0].y);
+      for(let i=1;i<path.length;i++) dctx.lineTo(path[i].x, path[i].y);
+      dctx.stroke();
+      dctx.shadowBlur = 0;
+
+      dctx.fillStyle = "rgba(167,139,250,.28)";
+      dctx.beginPath(); dctx.arc(path[0].x, path[0].y, 8, 0, Math.PI*2); dctx.fill();
+      dctx.fillStyle = "rgba(96,165,250,.26)";
+      dctx.beginPath(); dctx.arc(path[path.length-1].x, path[path.length-1].y, 8, 0, Math.PI*2); dctx.fill();
+    }
+
+    function matchDemoDraw(t){
+      const w = demoCanvas.getBoundingClientRect().width;
+      const h = demoCanvas.getBoundingClientRect().height;
+      dctx.clearRect(0,0,w,h);
+      dctx.fillStyle = "rgba(0,0,0,.20)";
+      dctx.fillRect(0,0,w,h);
+
+      const cols = 10, rows = 10;
+      const cell = Math.floor(Math.min(w/cols, h/rows));
+      const bw = cell*cols, bh = cell*rows;
+      const ox = Math.floor((w-bw)/2);
+      const oy = Math.floor((h-bh)/2);
+
+      for(let y=0;y<rows;y++){
+        for(let x=0;x<cols;x++){
+          const px = ox + x*cell, py = oy + y*cell;
+          dctx.strokeStyle = "rgba(255,255,255,.05)";
+          dctx.strokeRect(px,py,cell,cell);
+
+          const base = (x+y)%3;
+          const col = base===0 ? "rgba(243,245,255,.18)" : base===1 ? "rgba(96,165,250,.16)" : "rgba(167,139,250,.14)";
+          dctx.fillStyle = col;
+          dctx.beginPath();
+          dctx.arc(px + cell/2, py + cell/2, Math.max(3, cell*0.22), 0, Math.PI*2);
+          dctx.fill();
+        }
+      }
+
+      const glow = (Math.sin(t*3.0)+1)/2;
+      const step = Math.floor(t*1.1) % 6;
+      const mx = 2 + step;
+      const my = 6;
+
+      for(let i=0;i<3;i++){
+        const px = ox + (mx+i)*cell;
+        const py = oy + my*cell;
+        dctx.fillStyle = `rgba(120,255,214,${0.14 + glow*0.32})`;
+        dctx.fillRect(px+1, py+1, cell-2, cell-2);
+        dctx.strokeStyle = `rgba(243,245,255,${0.08 + glow*0.22})`;
+        dctx.strokeRect(px+1.5, py+1.5, cell-3, cell-3);
+      }
+    }
+
+    function renderStaticPreview(){
+      if(selectedDemo === "tetris"){
+        resetTetrisLoop();
+        for(let i=0;i<10;i++) stepTetris(70);
+        drawBoardToCanvas();
+        setStats(TET.score, TET.lines, TET.level);
+      } else if(selectedDemo === "pipe"){
+        pipeDemoDraw(0.1);
+        setStats(42, 3, 1);
+      } else {
+        matchDemoDraw(0.1);
+        setStats(80, 6, 2);
+      }
+    }
+
+    function drawLoop(ts){
+      if(!playing) return;
+      if(!lastTs) lastTs = ts;
+      const dt = ts - lastTs;
+      lastTs = ts;
+
+      if(selectedDemo === "tetris"){
+        stepTetris(dt);
+        drawBoardToCanvas();
+      } else if(selectedDemo === "pipe"){
+        pipeDemoDraw(ts/1000);
+      } else {
+        matchDemoDraw(ts/1000);
+      }
+
+      rafId = requestAnimationFrame(drawLoop);
+    }
+
+    function stopDemo(){
+      playing = false;
+      runDemoBtn.textContent = "Run demo";
+      if(rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+      lastTs = 0;
+      renderStaticPreview();
+    }
+
+    function runDemo(){
+      if(playing){
+        stopDemo();
+        return;
+      }
+      playing = true;
+      runDemoBtn.textContent = "Stop";
+      lastTs = 0;
+
+      if(selectedDemo === "tetris") resetTetrisLoop();
+      rafId = requestAnimationFrame(drawLoop);
+    }
+
+    runDemoBtn.addEventListener("click", runDemo);
+
+    chips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        chips.forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        selectedDemo = chip.dataset.demo;
+
+        if(playing) stopDemo();
+        else renderStaticPreview();
+      });
+    });
+
+    // init
+    resetTetrisLoop();
+    renderStaticPreview();
+
+    // Ambient audio: try autoplay; when blocked (Chrome file://), prompt is already visible — one click starts sound
+    const ambient = document.getElementById('ambient');
+    const audioToggle = document.getElementById('audioToggle');
+    const audioPrompt = document.getElementById('audioPrompt');
+    if (ambient && audioToggle) {
+      ambient.loop = true;
+      let ambientStarted = false;
+      function startAmbient() {
+        if (ambientStarted) return;
+        ambient.play().then(() => {
+          ambientStarted = true;
+          audioToggle.classList.remove('muted');
+          audioToggle.setAttribute('aria-label', 'Mute ambient sound');
+          audioToggle.title = 'Click to mute';
+          if (audioPrompt) audioPrompt.classList.add('isHidden');
+        }).catch(() => {});
+      }
+      startAmbient();
+      // If autoplay worked (e.g. served from a server), hide the prompt
+      setTimeout(function() {
+        if (!ambient.paused && ambient.readyState >= 2 && audioPrompt) {
+          audioPrompt.classList.add('isHidden');
+        }
+      }, 300);
+      function onFirstInteraction() {
+        startAmbient();
+        if (audioPrompt) audioPrompt.classList.add('isHidden');
+      }
+      document.body.addEventListener('click', onFirstInteraction, { once: true });
+      document.body.addEventListener('keydown', onFirstInteraction, { once: true });
+      if (audioPrompt) {
+        audioPrompt.addEventListener('click', (e) => {
+          e.stopPropagation();
+          onFirstInteraction();
+        });
+      }
+      audioToggle.addEventListener('click', () => {
+        startAmbient();
+        if (!ambientStarted) return;
+        if (ambient.muted) {
+          ambient.muted = false;
+          audioToggle.classList.remove('muted');
+          audioToggle.setAttribute('aria-label', 'Mute ambient sound');
+          audioToggle.title = 'Click to mute';
+        } else {
+          ambient.muted = true;
+          audioToggle.classList.add('muted');
+          audioToggle.setAttribute('aria-label', 'Unmute ambient sound');
+          audioToggle.title = 'Click to unmute';
+        }
+      });
+    }
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
