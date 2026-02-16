@@ -14,10 +14,10 @@
       --glass: rgba(255,255,255,.06);
       --line: rgba(255,255,255,.12);
 
-      --a1:#78ffd6; /* mint */
-      --a2:#a78bfa; /* violet */
-      --a3:#60a5fa; /* blue */
-      --a4:#fb7185; /* pink */
+      --a1:#6366f1; /* indigo */
+      --a2:#8b5cf6; /* purple */
+      --a3:#3b82f6; /* dark blue */
+      --a4:#4f46e5; /* deep indigo */
     }
 
     *{ box-sizing:border-box; }
@@ -26,9 +26,9 @@
       margin:0;
       font-family: ui-sans-serif, system-ui;
       color: var(--ink);
-      background: radial-gradient(1200px 900px at 30% -10%, rgba(167,139,250,.24), transparent 55%),
-                  radial-gradient(900px 700px at 110% 15%, rgba(96,165,250,.18), transparent 45%),
-                  radial-gradient(900px 700px at 60% 120%, rgba(120,255,214,.12), transparent 40%),
+      background: radial-gradient(1200px 900px at 30% -10%, rgba(99,102,241,.28), transparent 55%),
+                  radial-gradient(900px 700px at 110% 15%, rgba(59,130,246,.22), transparent 45%),
+                  radial-gradient(900px 700px at 60% 120%, rgba(139,92,246,.20), transparent 40%),
                   linear-gradient(180deg, #05060a 0%, #070812 45%, #04040a 100%);
       overflow-x:hidden;
     }
@@ -74,9 +74,9 @@
     .logo{
       width:34px; height:34px; border-radius:10px;
       background:
-        radial-gradient(circle at 30% 30%, rgba(120,255,214,.6), transparent 60%),
-        radial-gradient(circle at 70% 30%, rgba(167,139,250,.55), transparent 55%),
-        radial-gradient(circle at 50% 80%, rgba(96,165,250,.4), transparent 60%),
+        radial-gradient(circle at 30% 30%, rgba(99,102,241,.6), transparent 60%),
+        radial-gradient(circle at 70% 30%, rgba(139,92,246,.55), transparent 55%),
+        radial-gradient(circle at 50% 80%, rgba(59,130,246,.4), transparent 60%),
         rgba(255,255,255,.06);
       border: 1px solid rgba(255,255,255,.12);
       box-shadow: 0 12px 40px rgba(0,0,0,.35);
@@ -109,20 +109,20 @@
     }
     .btn:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.08); }
     .btn.primary{
-      border-color: rgba(120,255,214,.35);
-      background: linear-gradient(135deg, rgba(120,255,214,.18), rgba(167,139,250,.14));
+      border-color: rgba(99,102,241,.35);
+      background: linear-gradient(135deg, rgba(99,102,241,.18), rgba(139,92,246,.14));
     }
-    .btn.primary:hover{ border-color: rgba(120,255,214,.55); }
+    .btn.primary:hover{ border-color: rgba(99,102,241,.55); }
 
     .hero{
       padding: 46px 0 26px;
-      display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap:22px;
+      display:flex;
+      flex-direction: column;
       align-items:center;
+      gap:32px;
     }
     @media (max-width: 880px){
-      .hero{ grid-template-columns: 1fr; padding-top: 26px; }
+      .hero{ padding-top: 26px; }
     }
 
     .kicker{
@@ -134,8 +134,8 @@
     }
     .dot{
       width:8px; height:8px; border-radius:99px;
-      background: radial-gradient(circle, var(--a1), rgba(120,255,214,.2));
-      box-shadow: 0 0 16px rgba(120,255,214,.55);
+      background: radial-gradient(circle, var(--a1), rgba(99,102,241,.2));
+      box-shadow: 0 0 16px rgba(99,102,241,.55);
     }
 
     h1{
@@ -145,7 +145,7 @@
       letter-spacing:-.03em;
     }
     .grad{
-      background: linear-gradient(90deg, rgba(243,245,255,1), rgba(120,255,214,.95), rgba(167,139,250,.95), rgba(96,165,250,.95));
+      background: linear-gradient(90deg, rgba(243,245,255,1), rgba(99,102,241,.95), rgba(139,92,246,.95), rgba(59,130,246,.95));
       -webkit-background-clip:text;
       background-clip:text;
       color:transparent;
@@ -178,6 +178,8 @@
       overflow:hidden;
       box-shadow: 0 30px 100px rgba(0,0,0,.45);
       position:relative;
+      width: min(900px, 95%);
+      max-width: 900px;
     }
     .termTop{
       display:flex; align-items:center; justify-content:space-between;
@@ -211,7 +213,7 @@
       position:relative;
       border-top: 1px solid rgba(255,255,255,.06);
       background: rgba(0,0,0,.20);
-      min-height: 420px;
+      min-height: 680px;
       overflow:hidden;
     }
 
@@ -232,8 +234,8 @@
       inset:0;
       background:
         radial-gradient(900px 520px at 50% 30%, rgba(0,0,0,.12), rgba(0,0,0,.62)),
-        radial-gradient(600px 380px at 25% 20%, rgba(120,255,214,.10), transparent 60%),
-        radial-gradient(640px 420px at 85% 25%, rgba(167,139,250,.10), transparent 62%);
+        radial-gradient(600px 380px at 25% 20%, rgba(99,102,241,.10), transparent 60%),
+        radial-gradient(640px 420px at 85% 25%, rgba(139,92,246,.10), transparent 62%);
       pointer-events:none;
       z-index:2;
     }
@@ -273,7 +275,7 @@
     }
     .bootLines li{ margin: 2px 0; }
     .bootLines .prompt{ color: rgba(243,245,255,.60); }
-    .bootLines .ok{ color: rgba(120,255,214,.85); }
+    .bootLines .ok{ color: rgba(99,102,241,.85); }
 
     .bootReady{
       margin-top: 14px;
@@ -321,8 +323,8 @@
       background: rgba(255,255,255,.06);
     }
     .chip.active{
-      border-color: rgba(120,255,214,.45);
-      background: linear-gradient(135deg, rgba(120,255,214,.14), rgba(167,139,250,.10));
+      border-color: rgba(99,102,241,.45);
+      background: linear-gradient(135deg, rgba(99,102,241,.14), rgba(139,92,246,.10));
       color: rgba(243,245,255,.92);
       box-shadow: 0 18px 40px rgba(0,0,0,.18);
     }
@@ -339,7 +341,7 @@
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.16);
     }
-    .demoStats b{ color: rgba(120,255,214,.9); font-weight:650; }
+    .demoStats b{ color: rgba(99,102,241,.9); font-weight:650; }
 
     /* sections below unchanged */
     .grid3{
@@ -393,8 +395,8 @@
       width:20px; height:20px; border-radius: 6px;
       border:1px solid rgba(255,255,255,.12);
       background:
-        radial-gradient(circle at 30% 30%, rgba(120,255,214,.4), transparent 65%),
-        radial-gradient(circle at 70% 30%, rgba(167,139,250,.3), transparent 65%),
+        radial-gradient(circle at 30% 30%, rgba(99,102,241,.4), transparent 65%),
+        radial-gradient(circle at 70% 30%, rgba(139,92,246,.3), transparent 65%),
         rgba(255,255,255,.04);
       flex: 0 0 auto;
       box-shadow: 0 4px 12px rgba(0,0,0,.2);
@@ -417,7 +419,7 @@
 
     .glowline{
       height:1px;
-      background: linear-gradient(90deg, transparent, rgba(120,255,214,.35), rgba(167,139,250,.25), transparent);
+      background: linear-gradient(90deg, transparent, rgba(99,102,241,.35), rgba(139,92,246,.25), transparent);
       opacity:.8;
       margin-top: 18px;
     }
@@ -501,8 +503,8 @@
     }
     .modalInput::placeholder{ color: rgba(243,245,255,.45); }
     .modalInput:focus{
-      border-color: rgba(120,255,214,.48);
-      box-shadow: 0 0 0 4px rgba(120,255,214,.10);
+      border-color: rgba(99,102,241,.48);
+      box-shadow: 0 0 0 4px rgba(99,102,241,.10);
     }
 
     .checkRow{
@@ -540,7 +542,7 @@
       color: rgba(243,245,255,.65);
       margin-right: auto;
     }
-    .modalMsg.ok{ color: rgba(120,255,214,.9); }
+    .modalMsg.ok{ color: rgba(99,102,241,.9); }
     .modalMsg.err{ color: rgba(251,113,133,.95); }
 
     /* Ambient audio toggle — volume icon, slash when muted */
@@ -575,7 +577,7 @@
       transform: translateX(-50%);
       padding: 12px 20px;
       border-radius: 999px;
-      border: 1px solid rgba(120,255,214,.35);
+      border: 1px solid rgba(99,102,241,.35);
       background: rgba(6,7,11,.92);
       backdrop-filter: blur(10px);
       color: rgba(243,245,255,.9);
@@ -586,7 +588,7 @@
       transition: opacity .25s ease, transform .25s ease;
       box-shadow: 0 8px 32px rgba(0,0,0,.4);
     }
-    .audioPrompt:hover{ border-color: rgba(120,255,214,.55); }
+    .audioPrompt:hover{ border-color: rgba(99,102,241,.55); }
     .audioPrompt.isHidden{
       opacity: 0;
       pointer-events: none;
@@ -633,37 +635,19 @@
     </div>
 
     <section class="hero">
-      <div>
+      <div style="text-align:center; max-width:600px;">
         <div class="kicker"><span class="dot"></span> new name, same calm — now with a sci-fi vibe</div>
         <h1>
           <span class="grad">Puzzlefi</span><br/>
           <span class="tagline">calming puzzles for your inner space station.</span>
         </h1>
-        <p class="sub">
+        <p class="sub" style="margin:0 auto;">
           Unwind with gentle, satisfying puzzles wrapped in a low-budget sci-fi aesthetic —
           black & white UI, galaxy glow, and just enough "retro console" to feel iconic.
         </p>
 
-        <div class="ctaRow">
+        <div class="ctaRow" style="justify-content:center; margin-top:20px;">
           <a class="btn primary" href="#waitlist">Join the waitlist</a>
-          <span class="micro">Prototype demo • not interactive yet</span>
-        </div>
-
-        <div class="glowline"></div>
-
-        <div class="grid3">
-          <div class="card">
-            <h3>Calm focus</h3>
-            <p>Designed to feel like a slow exhale — puzzles that soothe, not spike your stress.</p>
-          </div>
-          <div class="card">
-            <h3>Sci-fi minimal</h3>
-            <p>Monochrome base + galaxy accents. Retro scanlines. A gentle "ship console" mood.</p>
-          </div>
-          <div class="card">
-            <h3>Quick sessions</h3>
-            <p>Short sessions, soft feedback, and satisfying progress without pressure.</p>
-          </div>
         </div>
       </div>
 
@@ -699,7 +683,7 @@
             <div class="demoOptions" aria-label="Choose a demo">
               <button class="chip active" data-demo="tetris" type="button">Stack Signals</button>
               <button class="chip" data-demo="pipe" type="button">Signal Router</button>
-              <button class="chip" data-demo="match" type="button">Star Match</button>
+              <button class="chip" data-demo="blaster" type="button">Galaxy Blaster</button>
             </div>
 
             <div class="demoStats" aria-label="Demo stats">
@@ -971,10 +955,10 @@
     const COLORS = {
       0: "rgba(0,0,0,0)",
       1: "rgba(243,245,255,.78)",
-      2: "rgba(120,255,214,.78)",
-      3: "rgba(167,139,250,.72)",
-      4: "rgba(96,165,250,.70)",
-      5: "rgba(251,113,133,.60)"
+      2: "rgba(99,102,241,.78)",
+      3: "rgba(139,92,246,.72)",
+      4: "rgba(59,130,246,.70)",
+      5: "rgba(79,70,229,.60)"
     };
 
     const SHAPES = {
@@ -1209,92 +1193,401 @@
       }
     }
 
+    // Signal Router - Pacman-style galaxy maze game
+    const PIPE_STATE = {
+      maze: [],
+      player: {x: 1, y: 1, dir: 0, nextDir: 0, anim: 0},
+      dots: [],
+      score: 0,
+      cellSize: 0,
+      cols: 15,
+      rows: 12,
+      lastMove: 0
+    };
+
+    // Simple maze layout (1 = wall, 0 = path)
+    const MAZE_LAYOUT = [
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+      [1,0,1,1,1,0,1,0,1,1,1,1,1,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,1,0,1,1,1,1,1,0,1,0,1,0,1],
+      [1,0,1,0,0,0,0,0,0,0,1,0,1,0,1],
+      [1,0,1,1,1,0,1,0,1,1,1,0,1,0,1],
+      [1,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+      [1,0,1,1,1,0,1,1,1,0,1,1,1,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,0,1,1,1,1,1,1,1,1,1,1,1,0,1],
+      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    ];
+
+    function initPipeDemo(){
+      PIPE_STATE.maze = MAZE_LAYOUT.map(row => row.slice());
+      PIPE_STATE.player = {x: 1, y: 1, dir: 0, nextDir: 0, anim: 0};
+      PIPE_STATE.dots = [];
+      PIPE_STATE.score = 0;
+      PIPE_STATE.lastMove = 0;
+      
+      // Place dots in empty spaces
+      for(let y = 0; y < PIPE_STATE.rows; y++){
+        for(let x = 0; x < PIPE_STATE.cols; x++){
+          if(PIPE_STATE.maze[y][x] === 0 && !(x === 1 && y === 1)){
+            PIPE_STATE.dots.push({x, y, collected: false});
+          }
+        }
+      }
+    }
+
     function pipeDemoDraw(t){
       const w = demoCanvas.getBoundingClientRect().width;
       const h = demoCanvas.getBoundingClientRect().height;
       dctx.clearRect(0,0,w,h);
-      dctx.fillStyle = "rgba(0,0,0,.20)";
+      dctx.fillStyle = "rgba(0,0,0,.25)";
       dctx.fillRect(0,0,w,h);
 
-      const grid = 24;
-      dctx.strokeStyle = "rgba(255,255,255,.05)";
-      for(let x=0; x<=w; x+=grid){ dctx.beginPath(); dctx.moveTo(x,0); dctx.lineTo(x,h); dctx.stroke(); }
-      for(let y=0; y<=h; y+=grid){ dctx.beginPath(); dctx.moveTo(0,y); dctx.lineTo(w,y); dctx.stroke(); }
+      PIPE_STATE.cellSize = Math.floor(Math.min(w / PIPE_STATE.cols, h / PIPE_STATE.rows));
+      const offsetX = (w - PIPE_STATE.cellSize * PIPE_STATE.cols) / 2;
+      const offsetY = (h - PIPE_STATE.cellSize * PIPE_STATE.rows) / 2;
 
-      const glow = (Math.sin(t*2.2)+1)/2;
-      dctx.lineWidth = 10;
-      dctx.lineCap = "round";
-
-      const path = [
-        {x: 26, y: h-40},
-        {x: 26, y: h*0.55},
-        {x: w*0.55, y: h*0.55},
-        {x: w*0.55, y: 70},
-        {x: w-34, y: 70},
-      ];
-
-      dctx.strokeStyle = "rgba(243,245,255,.16)";
-      dctx.beginPath();
-      dctx.moveTo(path[0].x, path[0].y);
-      for(let i=1;i<path.length;i++) dctx.lineTo(path[i].x, path[i].y);
-      dctx.stroke();
-
-      dctx.strokeStyle = `rgba(120,255,214,${0.18 + glow*0.34})`;
-      dctx.shadowColor = "rgba(120,255,214,.45)";
-      dctx.shadowBlur = 16;
-      dctx.beginPath();
-      dctx.moveTo(path[0].x, path[0].y);
-      for(let i=1;i<path.length;i++) dctx.lineTo(path[i].x, path[i].y);
-      dctx.stroke();
-      dctx.shadowBlur = 0;
-
-      dctx.fillStyle = "rgba(167,139,250,.28)";
-      dctx.beginPath(); dctx.arc(path[0].x, path[0].y, 8, 0, Math.PI*2); dctx.fill();
-      dctx.fillStyle = "rgba(96,165,250,.26)";
-      dctx.beginPath(); dctx.arc(path[path.length-1].x, path[path.length-1].y, 8, 0, Math.PI*2); dctx.fill();
-    }
-
-    function matchDemoDraw(t){
-      const w = demoCanvas.getBoundingClientRect().width;
-      const h = demoCanvas.getBoundingClientRect().height;
-      dctx.clearRect(0,0,w,h);
-      dctx.fillStyle = "rgba(0,0,0,.20)";
-      dctx.fillRect(0,0,w,h);
-
-      const cols = 10, rows = 10;
-      const cell = Math.floor(Math.min(w/cols, h/rows));
-      const bw = cell*cols, bh = cell*rows;
-      const ox = Math.floor((w-bw)/2);
-      const oy = Math.floor((h-bh)/2);
-
-      for(let y=0;y<rows;y++){
-        for(let x=0;x<cols;x++){
-          const px = ox + x*cell, py = oy + y*cell;
-          dctx.strokeStyle = "rgba(255,255,255,.05)";
-          dctx.strokeRect(px,py,cell,cell);
-
-          const base = (x+y)%3;
-          const col = base===0 ? "rgba(243,245,255,.18)" : base===1 ? "rgba(96,165,250,.16)" : "rgba(167,139,250,.14)";
-          dctx.fillStyle = col;
-          dctx.beginPath();
-          dctx.arc(px + cell/2, py + cell/2, Math.max(3, cell*0.22), 0, Math.PI*2);
-          dctx.fill();
+      // Draw maze walls
+      dctx.strokeStyle = "rgba(243,245,255,.12)";
+      dctx.fillStyle = "rgba(243,245,255,.08)";
+      dctx.lineWidth = 2;
+      
+      for(let y = 0; y < PIPE_STATE.rows; y++){
+        for(let x = 0; x < PIPE_STATE.cols; x++){
+          if(PIPE_STATE.maze[y][x] === 1){
+            const px = offsetX + x * PIPE_STATE.cellSize;
+            const py = offsetY + y * PIPE_STATE.cellSize;
+            dctx.fillRect(px, py, PIPE_STATE.cellSize, PIPE_STATE.cellSize);
+            dctx.strokeRect(px, py, PIPE_STATE.cellSize, PIPE_STATE.cellSize);
+          }
         }
       }
 
-      const glow = (Math.sin(t*3.0)+1)/2;
-      const step = Math.floor(t*1.1) % 6;
-      const mx = 2 + step;
-      const my = 6;
+      // Draw dots (stars)
+      PIPE_STATE.dots.forEach(dot => {
+        if(dot.collected) return;
+        const px = offsetX + dot.x * PIPE_STATE.cellSize + PIPE_STATE.cellSize / 2;
+        const py = offsetY + dot.y * PIPE_STATE.cellSize + PIPE_STATE.cellSize / 2;
+        const pulse = (Math.sin(t * 1.5 + dot.x + dot.y) + 1) / 2;
+        
+        dctx.fillStyle = `rgba(99,102,241,${0.4 + pulse * 0.3})`;
+        dctx.shadowColor = "rgba(99,102,241,.5)";
+        dctx.shadowBlur = 6;
+        dctx.beginPath();
+        dctx.arc(px, py, 3 + pulse * 1, 0, Math.PI * 2);
+        dctx.fill();
+        dctx.shadowBlur = 0;
+      });
 
-      for(let i=0;i<3;i++){
-        const px = ox + (mx+i)*cell;
-        const py = oy + my*cell;
-        dctx.fillStyle = `rgba(120,255,214,${0.14 + glow*0.32})`;
-        dctx.fillRect(px+1, py+1, cell-2, cell-2);
-        dctx.strokeStyle = `rgba(243,245,255,${0.08 + glow*0.22})`;
-        dctx.strokeRect(px+1.5, py+1.5, cell-3, cell-3);
+      // Slow, calm player movement (every 0.3 seconds)
+      if(t - PIPE_STATE.lastMove > 0.3){
+        PIPE_STATE.lastMove = t;
+        
+        // Try to change direction
+        const dirs = [[0, -1], [1, 0], [0, 1], [-1, 0]]; // up, right, down, left
+        const nextDir = PIPE_STATE.player.nextDir;
+        const [dx, dy] = dirs[nextDir];
+        const nx = PIPE_STATE.player.x + dx;
+        const ny = PIPE_STATE.player.y + dy;
+        
+        if(nx >= 0 && nx < PIPE_STATE.cols && ny >= 0 && ny < PIPE_STATE.rows && 
+           PIPE_STATE.maze[ny][nx] === 0){
+          PIPE_STATE.player.dir = nextDir;
+        }
+        
+        // Move in current direction
+        const [moveDx, moveDy] = dirs[PIPE_STATE.player.dir];
+        const newX = PIPE_STATE.player.x + moveDx;
+        const newY = PIPE_STATE.player.y + moveDy;
+        
+        if(newX >= 0 && newX < PIPE_STATE.cols && newY >= 0 && newY < PIPE_STATE.rows && 
+           PIPE_STATE.maze[newY][newX] === 0){
+          PIPE_STATE.player.x = newX;
+          PIPE_STATE.player.y = newY;
+          
+          // Collect dot
+          const dot = PIPE_STATE.dots.find(d => d.x === newX && d.y === newY && !d.collected);
+          if(dot){
+            dot.collected = true;
+            PIPE_STATE.score += 10;
+          }
+          
+          // Change direction occasionally (calm, not frantic)
+          if(Math.random() < 0.15){
+            const possibleDirs = [];
+            for(let i = 0; i < 4; i++){
+              const [testDx, testDy] = dirs[i];
+              const testX = newX + testDx;
+              const testY = newY + testDy;
+              if(testX >= 0 && testX < PIPE_STATE.cols && testY >= 0 && testY < PIPE_STATE.rows && 
+                 PIPE_STATE.maze[testY][testX] === 0){
+                possibleDirs.push(i);
+              }
+            }
+            if(possibleDirs.length > 0){
+              PIPE_STATE.player.nextDir = possibleDirs[Math.floor(Math.random() * possibleDirs.length)];
+            }
+          }
+        } else {
+          // Hit wall, try random direction
+          const possibleDirs = [];
+          for(let i = 0; i < 4; i++){
+            const [testDx, testDy] = dirs[i];
+            const testX = PIPE_STATE.player.x + testDx;
+            const testY = PIPE_STATE.player.y + testDy;
+            if(testX >= 0 && testX < PIPE_STATE.cols && testY >= 0 && testY < PIPE_STATE.rows && 
+               PIPE_STATE.maze[testY][testX] === 0){
+              possibleDirs.push(i);
+            }
+          }
+          if(possibleDirs.length > 0){
+            PIPE_STATE.player.dir = possibleDirs[Math.floor(Math.random() * possibleDirs.length)];
+            PIPE_STATE.player.nextDir = PIPE_STATE.player.dir;
+          }
+        }
       }
+
+      // Draw player (galaxy-themed Pacman)
+      const px = offsetX + PIPE_STATE.player.x * PIPE_STATE.cellSize + PIPE_STATE.cellSize / 2;
+      const py = offsetY + PIPE_STATE.player.y * PIPE_STATE.cellSize + PIPE_STATE.cellSize / 2;
+      const radius = PIPE_STATE.cellSize * 0.35;
+      const mouthAngle = (Math.sin(t * 3) + 1) / 2 * 0.4; // Calm mouth animation
+      
+      // Player glow
+      dctx.fillStyle = "rgba(99,102,241,.2)";
+      dctx.shadowColor = "rgba(99,102,241,.6)";
+      dctx.shadowBlur = 15;
+      dctx.beginPath();
+      dctx.arc(px, py, radius * 1.3, 0, Math.PI * 2);
+      dctx.fill();
+      dctx.shadowBlur = 0;
+      
+      // Player body (Pacman shape)
+      dctx.fillStyle = "rgba(99,102,241,.85)";
+      dctx.shadowColor = "rgba(99,102,241,.5)";
+      dctx.shadowBlur = 8;
+      dctx.beginPath();
+      const startAngle = PIPE_STATE.player.dir * Math.PI / 2 + mouthAngle;
+      const endAngle = PIPE_STATE.player.dir * Math.PI / 2 - mouthAngle + Math.PI * 2;
+      dctx.arc(px, py, radius, startAngle, endAngle);
+      dctx.lineTo(px, py);
+      dctx.closePath();
+      dctx.fill();
+      dctx.shadowBlur = 0;
+      
+      // Player core (eye)
+      dctx.fillStyle = "rgba(243,245,255,.7)";
+      const eyeOffset = radius * 0.3;
+      const eyeX = px + Math.cos(PIPE_STATE.player.dir * Math.PI / 2) * eyeOffset;
+      const eyeY = py + Math.sin(PIPE_STATE.player.dir * Math.PI / 2) * eyeOffset;
+      dctx.beginPath();
+      dctx.arc(eyeX, eyeY, radius * 0.2, 0, Math.PI * 2);
+      dctx.fill();
+    }
+
+    // Galaxy Blaster - calm space shooter
+    const BLASTER_STATE = {
+      player: {x: 0.5, y: 0.85, targetX: 0.5},
+      enemies: [],
+      bullets: [],
+      stars: [],
+      lastEnemy: 0,
+      lastBullet: 0,
+      score: 0,
+      wave: 0
+    };
+
+    function initBlasterDemo(){
+      BLASTER_STATE.enemies = [];
+      BLASTER_STATE.bullets = [];
+      BLASTER_STATE.stars = Array.from({length: 40}, () => ({
+        x: Math.random(),
+        y: Math.random(),
+        speed: 0.3 + Math.random() * 0.4,
+        size: 1 + Math.random() * 2
+      }));
+      BLASTER_STATE.lastEnemy = 0;
+      BLASTER_STATE.lastBullet = 0;
+      BLASTER_STATE.score = 0;
+      BLASTER_STATE.wave = 0;
+      BLASTER_STATE.player.x = 0.5;
+      BLASTER_STATE.player.targetX = 0.5;
+      BLASTER_STATE.player.y = 0.85;
+    }
+
+    function blasterDemoDraw(t){
+      const w = demoCanvas.getBoundingClientRect().width;
+      const h = demoCanvas.getBoundingClientRect().height;
+      dctx.clearRect(0,0,w,h);
+      dctx.fillStyle = "rgba(0,0,0,.25)";
+      dctx.fillRect(0,0,w,h);
+
+      // Animated starfield background
+      BLASTER_STATE.stars.forEach(star => {
+        star.y += star.speed * 0.001;
+        if(star.y > 1) star.y = 0;
+        
+        const x = star.x * w;
+        const y = star.y * h;
+        const alpha = 0.3 + Math.sin(t + star.x * 10) * 0.2;
+        dctx.fillStyle = `rgba(243,245,255,${alpha})`;
+        dctx.beginPath();
+        dctx.arc(x, y, star.size, 0, Math.PI*2);
+        dctx.fill();
+      });
+
+      // Smooth player movement - keep in frame
+      BLASTER_STATE.player.x += (BLASTER_STATE.player.targetX - BLASTER_STATE.player.x) * 0.05;
+      if(Math.abs(BLASTER_STATE.player.targetX - BLASTER_STATE.player.x) < 0.001){
+        // Clamp targetX to stay within bounds (0.15 to 0.85)
+        BLASTER_STATE.player.targetX = Math.max(0.15, Math.min(0.85, 0.2 + Math.sin(t * 0.5) * 0.3));
+      }
+      // Clamp actual position to stay in frame
+      BLASTER_STATE.player.x = Math.max(0.15, Math.min(0.85, BLASTER_STATE.player.x));
+
+      // Spawn enemies
+      if(t - BLASTER_STATE.lastEnemy > 0.8){
+        BLASTER_STATE.lastEnemy = t;
+        BLASTER_STATE.enemies.push({
+          x: 0.1 + Math.random() * 0.8,
+          y: -0.05,
+          speed: 0.0003 + Math.random() * 0.0002,
+          size: 12 + Math.random() * 8,
+          type: Math.floor(Math.random() * 3)
+        });
+      }
+
+      // Spawn bullets from player - limit to max 3 bullets on screen, slower rate
+      const MAX_BULLETS = 3;
+      if(BLASTER_STATE.bullets.length < MAX_BULLETS && t - BLASTER_STATE.lastBullet > 0.6){
+        BLASTER_STATE.lastBullet = t;
+        BLASTER_STATE.bullets.push({
+          x: BLASTER_STATE.player.x,
+          y: BLASTER_STATE.player.y,
+          speed: 0.0012
+        });
+      }
+
+      // Update enemies
+      BLASTER_STATE.enemies = BLASTER_STATE.enemies.filter(enemy => {
+        enemy.y += enemy.speed;
+        return enemy.y < 1.1;
+      });
+
+      // Update bullets
+      BLASTER_STATE.bullets = BLASTER_STATE.bullets.filter(bullet => {
+        bullet.y -= bullet.speed;
+        return bullet.y > -0.1;
+      });
+
+      // Collision detection
+      BLASTER_STATE.bullets.forEach((bullet, bi) => {
+        BLASTER_STATE.enemies.forEach((enemy, ei) => {
+          const dist = Math.sqrt(
+            Math.pow((bullet.x - enemy.x) * w, 2) + 
+            Math.pow((bullet.y - enemy.y) * h, 2)
+          );
+          if(dist < enemy.size){
+            BLASTER_STATE.bullets.splice(bi, 1);
+            BLASTER_STATE.enemies.splice(ei, 1);
+            BLASTER_STATE.score += 10;
+          }
+        });
+      });
+
+      // Draw enemies
+      BLASTER_STATE.enemies.forEach(enemy => {
+        const x = enemy.x * w;
+        const y = enemy.y * h;
+        const pulse = (Math.sin(t*3 + enemy.x*10) + 1) / 2;
+        
+        const colors = [
+          {main: "rgba(139,92,246,", glow: "rgba(139,92,246,"},
+          {main: "rgba(99,102,241,", glow: "rgba(99,102,241,"},
+          {main: "rgba(59,130,246,", glow: "rgba(59,130,246,"}
+        ];
+        const col = colors[enemy.type];
+
+        // Glow
+        dctx.fillStyle = `${col.glow}${0.15 + pulse*0.15})`;
+        dctx.shadowColor = `${col.glow}0.6)`;
+        dctx.shadowBlur = 20;
+        dctx.beginPath();
+        dctx.arc(x, y, enemy.size * 1.5, 0, Math.PI*2);
+        dctx.fill();
+        dctx.shadowBlur = 0;
+
+        // Main body
+        dctx.fillStyle = `${col.main}${0.6 + pulse*0.2})`;
+        dctx.beginPath();
+        dctx.arc(x, y, enemy.size, 0, Math.PI*2);
+        dctx.fill();
+
+        // Core
+        dctx.fillStyle = "rgba(243,245,255,.4)";
+        dctx.beginPath();
+        dctx.arc(x, y, enemy.size * 0.4, 0, Math.PI*2);
+        dctx.fill();
+      });
+
+      // Draw bullets
+      BLASTER_STATE.bullets.forEach(bullet => {
+        const x = bullet.x * w;
+        const y = bullet.y * h;
+        
+        dctx.fillStyle = "rgba(99,102,241,.9)";
+        dctx.shadowColor = "rgba(99,102,241,.8)";
+        dctx.shadowBlur = 8;
+        dctx.beginPath();
+        dctx.arc(x, y, 4, 0, Math.PI*2);
+        dctx.fill();
+        dctx.shadowBlur = 0;
+        
+        // Trail
+        dctx.fillStyle = "rgba(99,102,241,.3)";
+        dctx.beginPath();
+        dctx.arc(x, y + 8, 3, 0, Math.PI*2);
+        dctx.fill();
+      });
+
+      // Draw player ship
+      const px = BLASTER_STATE.player.x * w;
+      const py = BLASTER_STATE.player.y * h;
+      const shipPulse = (Math.sin(t*4) + 1) / 2;
+
+      // Ship glow
+      dctx.fillStyle = `rgba(99,102,241,${0.2 + shipPulse*0.15})`;
+      dctx.shadowColor = "rgba(99,102,241,.6)";
+      dctx.shadowBlur = 15;
+      dctx.beginPath();
+      dctx.arc(px, py, 18, 0, Math.PI*2);
+      dctx.fill();
+      dctx.shadowBlur = 0;
+
+      // Ship body (triangle)
+      dctx.fillStyle = `rgba(99,102,241,${0.8 + shipPulse*0.2})`;
+      dctx.beginPath();
+      dctx.moveTo(px, py - 16);
+      dctx.lineTo(px - 12, py + 10);
+      dctx.lineTo(px + 12, py + 10);
+      dctx.closePath();
+      dctx.fill();
+
+      // Ship core
+      dctx.fillStyle = "rgba(243,245,255,.6)";
+      dctx.beginPath();
+      dctx.arc(px, py - 4, 5, 0, Math.PI*2);
+      dctx.fill();
+
+      // Engine glow
+      dctx.fillStyle = `rgba(139,92,246,${0.4 + shipPulse*0.3})`;
+      dctx.beginPath();
+      dctx.arc(px - 6, py + 10, 3, 0, Math.PI*2);
+      dctx.arc(px + 6, py + 10, 3, 0, Math.PI*2);
+      dctx.fill();
     }
 
     function renderStaticPreview(){
@@ -1304,11 +1597,13 @@
         drawBoardToCanvas();
         setStats(TET.score, TET.lines, TET.level);
       } else if(selectedDemo === "pipe"){
+        initPipeDemo();
         pipeDemoDraw(0.1);
-        setStats(42, 3, 1);
+        setStats(PIPE_STATE.score, PIPE_STATE.dots.filter(d => d.collected).length, 1);
       } else {
-        matchDemoDraw(0.1);
-        setStats(80, 6, 2);
+        initBlasterDemo();
+        blasterDemoDraw(0.1);
+        setStats(BLASTER_STATE.score, 8, 2);
       }
     }
 
@@ -1321,10 +1616,13 @@
       if(selectedDemo === "tetris"){
         stepTetris(dt);
         drawBoardToCanvas();
+        setStats(TET.score, TET.lines, TET.level);
       } else if(selectedDemo === "pipe"){
         pipeDemoDraw(ts/1000);
+        setStats(PIPE_STATE.score, PIPE_STATE.dots.filter(d => d.collected).length, 1);
       } else {
-        matchDemoDraw(ts/1000);
+        blasterDemoDraw(ts/1000);
+        setStats(BLASTER_STATE.score, 8, 2);
       }
 
       rafId = requestAnimationFrame(drawLoop);
@@ -1349,6 +1647,8 @@
       lastTs = 0;
 
       if(selectedDemo === "tetris") resetTetrisLoop();
+      else if(selectedDemo === "pipe") initPipeDemo();
+      else if(selectedDemo === "blaster") initBlasterDemo();
       rafId = requestAnimationFrame(drawLoop);
     }
 
@@ -1423,6 +1723,34 @@
     }
 
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if(href === '#' || href === '#waitlist') {
+          // Handle waitlist separately (opens modal)
+          if(href === '#waitlist') {
+            e.preventDefault();
+            openWaitlistModal();
+          }
+          return;
+        }
+        
+        e.preventDefault();
+        const target = document.querySelector(href);
+        if(target) {
+          const headerOffset = 80;
+          const elementPosition = target.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
   </script>
 </body>
 </html>
