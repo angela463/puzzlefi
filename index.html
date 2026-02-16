@@ -204,11 +204,39 @@
       background: rgba(0,0,0,.22);
       gap:10px;
     }
-    .lights{ display:flex; gap:7px; }
+    .lights{ display:flex; gap:8px; align-items:center; }
     .light{
-      width:10px; height:10px; border-radius:99px;
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.08);
+      width:12px; height:12px; border-radius:99px;
+      border:none;
+      cursor:pointer;
+      padding:0;
+      transition: box-shadow .2s ease, transform .15s ease;
+    }
+    .light:hover{ transform: scale(1.15); }
+    .light:focus{ outline: none; }
+    .light.stop{
+      background: rgba(251,113,133,.5);
+      box-shadow: 0 0 0 1px rgba(251,113,133,.3);
+    }
+    .light.stop.lit{
+      background: rgba(251,113,133,.95);
+      box-shadow: 0 0 12px rgba(251,113,133,.6);
+    }
+    .light.pause{
+      background: rgba(250,204,21,.5);
+      box-shadow: 0 0 0 1px rgba(250,204,21,.3);
+    }
+    .light.pause.lit{
+      background: rgba(250,204,21,.95);
+      box-shadow: 0 0 12px rgba(250,204,21,.6);
+    }
+    .light.run{
+      background: rgba(99,102,241,.5);
+      box-shadow: 0 0 0 1px rgba(99,102,241,.3);
+    }
+    .light.run.lit{
+      background: rgba(99,102,241,.95);
+      box-shadow: 0 0 12px rgba(99,102,241,.6);
     }
     .termTitle{
       font-size:12px;
@@ -221,7 +249,7 @@
       text-align:center;
       flex:1;
     }
-    .termTop .leftSlot{ width:56px; display:flex; align-items:center; gap:8px; }
+    .termTop .leftSlot{ width:60px; display:flex; align-items:center; gap:8px; }
     .termTop .rightSlot{ width:120px; display:flex; justify-content:flex-end; }
 
     /* BOOT DEMO AREA */
@@ -659,8 +687,10 @@
       <!-- BOOT box look, with background demo + 3 options -->
       <aside class="terminal" aria-label="Puzzlefi boot demo console">
         <div class="termTop">
-          <div class="leftSlot" aria-hidden="true">
-            <span class="light"></span><span class="light"></span><span class="light"></span>
+          <div class="lights leftSlot" role="group" aria-label="Demo controls">
+            <button type="button" class="light stop" id="lightStop" title="Stop demo" aria-label="Stop demo"> </button>
+            <button type="button" class="light pause" id="lightPause" title="Pause demo" aria-label="Pause demo"> </button>
+            <button type="button" class="light run lit" id="lightRun" title="Run demo" aria-label="Run demo"> </button>
           </div>
 
           <div class="termTitle">PUZZLEFI</div>
@@ -936,8 +966,19 @@
 
     let selectedDemo = "tetris";
     let playing = false;
+    let paused = false;
     let rafId = null;
     let lastTs = 0;
+
+    const lightStop = document.getElementById("lightStop");
+    const lightPause = document.getElementById("lightPause");
+    const lightRun = document.getElementById("lightRun");
+
+    function updateLights(){
+      lightStop.classList.toggle("lit", playing && !paused);
+      lightPause.classList.toggle("lit", playing && paused);
+      lightRun.classList.toggle("lit", !playing || paused);
+    }
 
     function setStats(score, lines, level){
       statScore.textContent = String(score);
@@ -1603,6 +1644,10 @@
 
     function drawLoop(ts){
       if(!playing) return;
+      if(paused){
+        rafId = requestAnimationFrame(drawLoop);
+        return;
+      }
       if(!lastTs) lastTs = ts;
       const dt = ts - lastTs;
       lastTs = ts;
@@ -1624,29 +1669,51 @@
 
     function stopDemo(){
       playing = false;
+      paused = false;
       runDemoBtn.textContent = "Run demo";
       if(rafId) cancelAnimationFrame(rafId);
       rafId = null;
       lastTs = 0;
+      updateLights();
       renderStaticPreview();
     }
 
     function runDemo(){
-      if(playing){
+      if(playing && !paused){
         stopDemo();
         return;
       }
+      if(playing && paused){
+        paused = false;
+        runDemoBtn.textContent = "Stop";
+        updateLights();
+        lastTs = 0;
+        rafId = requestAnimationFrame(drawLoop);
+        return;
+      }
       playing = true;
+      paused = false;
       runDemoBtn.textContent = "Stop";
       lastTs = 0;
 
       if(selectedDemo === "tetris") resetTetrisLoop();
       else if(selectedDemo === "pipe") initPipeDemo();
       else if(selectedDemo === "blaster") initBlasterDemo();
+      updateLights();
       rafId = requestAnimationFrame(drawLoop);
     }
 
+    function togglePause(){
+      if(!playing) return;
+      paused = !paused;
+      runDemoBtn.textContent = paused ? "Resume" : "Stop";
+      updateLights();
+    }
+
     runDemoBtn.addEventListener("click", runDemo);
+    lightStop.addEventListener("click", stopDemo);
+    lightPause.addEventListener("click", togglePause);
+    lightRun.addEventListener("click", () => { if(!playing) runDemo(); else if(paused) runDemo(); });
 
     chips.forEach(chip => {
       chip.addEventListener("click", () => {
