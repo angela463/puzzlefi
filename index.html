@@ -989,11 +989,11 @@
     // ---------- Stack Signals: calming space stacking (original, no Tetris IP) ----------
     const STACK_COLORS = {
       0: "rgba(0,0,0,0)",
-      1: "rgba(243,245,255,.75)",
-      2: "rgba(99,102,241,.78)",
-      3: "rgba(139,92,246,.72)",
-      4: "rgba(59,130,246,.70)",
-      5: "rgba(79,70,229,.60)"
+      1: { main: "rgba(243,245,255,.9)", glow: "rgba(243,245,255,.5)", dark: "rgba(200,205,255,.4)" },
+      2: { main: "rgba(99,102,241,.88)", glow: "rgba(99,102,241,.6)", dark: "rgba(67,70,200,.5)" },
+      3: { main: "rgba(139,92,246,.88)", glow: "rgba(139,92,246,.6)", dark: "rgba(100,65,200,.5)" },
+      4: { main: "rgba(59,130,246,.88)", glow: "rgba(59,130,246,.6)", dark: "rgba(30,90,200,.5)" },
+      5: { main: "rgba(79,70,229,.85)", glow: "rgba(79,70,229,.55)", dark: "rgba(50,45,180,.5)" }
     };
 
     // Original simple shapes only: dot, short bar, small block (no tetrominoes)
@@ -1148,7 +1148,7 @@
       const ox = Math.floor((w - bw)/2);
       const oy = Math.floor((h - bh)/2);
 
-      dctx.strokeStyle = "rgba(255,255,255,.04)";
+      dctx.strokeStyle = "rgba(255,255,255,.03)";
       for(let x=0; x<=COLS; x++){
         dctx.beginPath();
         dctx.moveTo(ox + x*cell, oy);
@@ -1162,23 +1162,43 @@
         dctx.stroke();
       }
 
+      function roundedRect(x, y, w, h, r){
+        dctx.beginPath();
+        dctx.moveTo(x + r, y);
+        dctx.lineTo(x + w - r, y);
+        dctx.arcTo(x + w, y, x + w, y + r, r);
+        dctx.lineTo(x + w, y + h - r);
+        dctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+        dctx.lineTo(x + r, y + h);
+        dctx.arcTo(x, y + h, x, y + h - r, r);
+        dctx.lineTo(x, y + r);
+        dctx.arcTo(x, y, x + r, y, r);
+        dctx.closePath();
+      }
+
       function drawSignalCell(x, y, colorId){
         if(colorId === 0) return;
-        const px = ox + x*cell + cell/2;
-        const py = oy + y*cell + cell/2;
-        const r = (cell/2) - 2;
+        const c = STACK_COLORS[colorId] || STACK_COLORS[1];
+        const px = ox + x*cell;
+        const py = oy + y*cell;
+        const pad = 2;
+        const r = 5;
+        const cw = cell - pad*2;
+        const ch = cell - pad*2;
 
-        dctx.fillStyle = STACK_COLORS[colorId] || STACK_COLORS[1];
-        dctx.shadowColor = STACK_COLORS[colorId] || STACK_COLORS[1];
-        dctx.shadowBlur = 8;
-        dctx.beginPath();
-        dctx.arc(px, py, r, 0, Math.PI*2);
+        dctx.shadowColor = c.glow;
+        dctx.shadowBlur = 16;
+        roundedRect(px + pad, py + pad, cw, ch, r);
+        const grad = dctx.createLinearGradient(px, py, px + cell, py + cell);
+        grad.addColorStop(0, c.main);
+        grad.addColorStop(0.35, c.main);
+        grad.addColorStop(1, c.dark);
+        dctx.fillStyle = grad;
         dctx.fill();
         dctx.shadowBlur = 0;
 
-        dctx.fillStyle = "rgba(255,255,255,.18)";
-        dctx.beginPath();
-        dctx.arc(px - r*0.2, py - r*0.2, r*0.35, 0, Math.PI*2);
+        dctx.fillStyle = "rgba(255,255,255,.28)";
+        roundedRect(px + pad + 2, py + pad + 2, cw * 0.55, ch * 0.32, 2);
         dctx.fill();
       }
 
