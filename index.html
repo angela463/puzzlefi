@@ -1202,16 +1202,17 @@
       }
     }
 
-    // Signal Router - Pacman-style galaxy maze game
+    // Signal Router - avoid hazards in the maze (no dots)
     const PIPE_STATE = {
       maze: [],
       player: {x: 1, y: 1, dir: 0, nextDir: 0, anim: 0},
-      dots: [],
+      hazards: [],
       score: 0,
       cellSize: 0,
       cols: 15,
       rows: 12,
-      lastMove: 0
+      lastMove: 0,
+      lastHazardMove: 0
     };
 
     // Simple maze layout (1 = wall, 0 = path)
@@ -1231,20 +1232,31 @@
       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
     ];
 
+    function getOpenCells(){
+      const open = [];
+      for(let y = 0; y < PIPE_STATE.rows; y++){
+        for(let x = 0; x < PIPE_STATE.cols; x++){
+          if(PIPE_STATE.maze[y][x] === 0 && !(x === 1 && y === 1))
+            open.push({x, y});
+        }
+      }
+      return open;
+    }
+
     function initPipeDemo(){
       PIPE_STATE.maze = MAZE_LAYOUT.map(row => row.slice());
       PIPE_STATE.player = {x: 1, y: 1, dir: 0, nextDir: 0, anim: 0};
-      PIPE_STATE.dots = [];
+      PIPE_STATE.hazards = [];
       PIPE_STATE.score = 0;
       PIPE_STATE.lastMove = 0;
-      
-      // Place dots in empty spaces
-      for(let y = 0; y < PIPE_STATE.rows; y++){
-        for(let x = 0; x < PIPE_STATE.cols; x++){
-          if(PIPE_STATE.maze[y][x] === 0 && !(x === 1 && y === 1)){
-            PIPE_STATE.dots.push({x, y, collected: false});
-          }
-        }
+      PIPE_STATE.lastHazardMove = 0;
+
+      const open = getOpenCells();
+      for(let i = 0; i < 3; i++){
+        const idx = Math.floor(Math.random() * open.length);
+        const {x, y} = open[idx];
+        if(x !== 1 || y !== 1)
+          PIPE_STATE.hazards.push({x, y, dir: Math.floor(Math.random() * 4)});
       }
     }
 
@@ -1275,21 +1287,38 @@
         }
       }
 
-      // Draw dots (stars)
-      PIPE_STATE.dots.forEach(dot => {
-        if(dot.collected) return;
-        const px = offsetX + dot.x * PIPE_STATE.cellSize + PIPE_STATE.cellSize / 2;
-        const py = offsetY + dot.y * PIPE_STATE.cellSize + PIPE_STATE.cellSize / 2;
-        const pulse = (Math.sin(t * 1.5 + dot.x + dot.y) + 1) / 2;
-        
-        dctx.fillStyle = `rgba(99,102,241,${0.4 + pulse * 0.3})`;
-        dctx.shadowColor = "rgba(99,102,241,.5)";
-        dctx.shadowBlur = 6;
-        dctx.beginPath();
-        dctx.arc(px, py, 3 + pulse * 1, 0, Math.PI * 2);
-        dctx.fill();
-        dctx.shadowBlur = 0;
-      });
+      // Move hazards toward player (every 0.4s), then check collision
+      const dirs = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+      if(t - PIPE_STATE.lastHazardMove > 0.4){
+        PIPE_STATE.lastHazardMove = t;
+        PIPE_STATE.hazards.forEach(h => {
+          const best = { dx: 0, dy: 0, dist: 1e9 };
+          for(let d = 0; d < 4; d++){
+            const [dx, dy] = dirs[d];
+            const nx = h.x + dx;
+            const ny = h.y + dy;
+            if(nx < 0 || nx >= PIPE_STATE.cols || ny < 0 || ny >= PIPE_STATE.rows || PIPE_STATE.maze[ny][nx] === 1) continue;
+            const dist = (PIPE_STATE.player.x - nx) ** 2 + (PIPE_STATE.player.y - ny) ** 2;
+            if(dist < best.dist){ best.dist = dist; best.dx = dx; best.dy = dy; }
+          }
+          const nx = h.x + best.dx;
+          const ny = h.y + best.dy;
+          if(best.dist < 1e9 && PIPE_STATE.maze[ny][nx] === 0){
+            h.x = nx;
+            h.y = ny;
+          } else {
+            const [dx, dy] = dirs[h.dir];
+            const tx = h.x + dx;
+            const ty = h.y + dy;
+            if(tx >= 0 && tx < PIPE_STATE.cols && ty >= 0 && ty < PIPE_STATE.rows && PIPE_STATE.maze[ty][tx] === 0){
+              h.x = tx;
+              h.y = ty;
+            } else h.dir = Math.floor(Math.random() * 4);
+          }
+        });
+        const hit = PIPE_STATE.hazards.some(h => h.x === PIPE_STATE.player.x && h.y === PIPE_STATE.player.y);
+        if(hit) initPipeDemo();
+      }
 
       // Slow, calm player movement (every 0.3 seconds)
       if(t - PIPE_STATE.lastMove > 0.3){
@@ -1316,14 +1345,8 @@
            PIPE_STATE.maze[newY][newX] === 0){
           PIPE_STATE.player.x = newX;
           PIPE_STATE.player.y = newY;
-          
-          // Collect dot
-          const dot = PIPE_STATE.dots.find(d => d.x === newX && d.y === newY && !d.collected);
-          if(dot){
-            dot.collected = true;
-            PIPE_STATE.score += 10;
-          }
-          
+          PIPE_STATE.score += 1;
+
           // Change direction occasionally (calm, not frantic)
           if(Math.random() < 0.15){
             const possibleDirs = [];
@@ -1395,6 +1418,20 @@
       dctx.beginPath();
       dctx.arc(eyeX, eyeY, radius * 0.2, 0, Math.PI * 2);
       dctx.fill();
+
+      // Draw hazards (avoid these or die)
+      PIPE_STATE.hazards.forEach(h => {
+        const hx = offsetX + h.x * PIPE_STATE.cellSize + PIPE_STATE.cellSize / 2;
+        const hy = offsetY + h.y * PIPE_STATE.cellSize + PIPE_STATE.cellSize / 2;
+        const pulse = (Math.sin(t * 2 + h.x + h.y) + 1) / 2;
+        dctx.fillStyle = `rgba(251,113,133,${0.5 + pulse * 0.3})`;
+        dctx.shadowColor = "rgba(251,113,133,.8)";
+        dctx.shadowBlur = 10;
+        dctx.beginPath();
+        dctx.arc(hx, hy, PIPE_STATE.cellSize * 0.32, 0, Math.PI * 2);
+        dctx.fill();
+        dctx.shadowBlur = 0;
+      });
     }
 
     // Galaxy Blaster - calm space shooter
@@ -1608,7 +1645,7 @@
       } else if(selectedDemo === "pipe"){
         initPipeDemo();
         pipeDemoDraw(0.1);
-        setStats(PIPE_STATE.score, PIPE_STATE.dots.filter(d => d.collected).length, 1);
+        setStats(PIPE_STATE.score, PIPE_STATE.hazards.length, 1);
       } else {
         initBlasterDemo();
         blasterDemoDraw(0.1);
@@ -1632,7 +1669,7 @@
         setStats(STACK.score, STACK.lines, STACK.level);
       } else if(selectedDemo === "pipe"){
         pipeDemoDraw(ts/1000);
-        setStats(PIPE_STATE.score, PIPE_STATE.dots.filter(d => d.collected).length, 1);
+        setStats(PIPE_STATE.score, PIPE_STATE.hazards.length, 1);
       } else {
         blasterDemoDraw(ts/1000);
         setStats(BLASTER_STATE.score, 8, 2);
