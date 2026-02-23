@@ -716,7 +716,7 @@
 
           <div class="bootFooter">
             <div class="demoOptions" aria-label="Choose a demo">
-              <button class="chip active" data-demo="tetris" type="button">Stack Signals</button>
+              <button class="chip active" data-demo="stack" type="button">Stack Signals</button>
               <button class="chip" data-demo="pipe" type="button">Signal Router</button>
               <button class="chip" data-demo="blaster" type="button">Galaxy Blaster</button>
             </div>
@@ -964,7 +964,7 @@
 
     const chips = Array.from(document.querySelectorAll(".chip"));
 
-    let selectedDemo = "tetris";
+    let selectedDemo = "stack";
     let playing = false;
     let paused = false;
     let rafId = null;
@@ -986,86 +986,58 @@
       statLevel.textContent = String(level);
     }
 
-    // ---------- Tetris-like background demo (drops + stacks + loops) ----------
-    const COLORS = {
+    // ---------- Stack Signals: calming space stacking (original, no Tetris IP) ----------
+    const STACK_COLORS = {
       0: "rgba(0,0,0,0)",
-      1: "rgba(243,245,255,.78)",
+      1: "rgba(243,245,255,.75)",
       2: "rgba(99,102,241,.78)",
       3: "rgba(139,92,246,.72)",
       4: "rgba(59,130,246,.70)",
       5: "rgba(79,70,229,.60)"
     };
 
-    const SHAPES = {
-      I: [[0,0,0,0],[1,1,1,1],[0,0,0,0],[0,0,0,0]],
-      O: [[1,1],[1,1]],
-      T: [[0,1,0],[1,1,1],[0,0,0]],
-      S: [[0,1,1],[1,1,0],[0,0,0]],
-      Z: [[1,1,0],[0,1,1],[0,0,0]],
-      J: [[1,0,0],[1,1,1],[0,0,0]],
-      L: [[0,0,1],[1,1,1],[0,0,0]],
-    };
-    const PIECE_COLOR = { I:2, O:1, T:3, S:4, Z:4, J:1, L:3 };
-
-    const SHOW_SEQ = [
-      {key:"T", x:4, r:0},{key:"L", x:6, r:0},{key:"J", x:2, r:0},{key:"O", x:4, r:0},
-      {key:"S", x:6, r:0},{key:"Z", x:2, r:0},{key:"I", x:4, r:1},{key:"T", x:4, r:1},
-      {key:"L", x:7, r:1},{key:"J", x:1, r:1},{key:"O", x:4, r:0},{key:"I", x:0, r:0},
+    // Original simple shapes only: dot, short bar, small block (no tetrominoes)
+    const STACK_SHAPES = [
+      { shape: [[1]], colorId: 2 },
+      { shape: [[1,1]], colorId: 3 },
+      { shape: [[1],[1]], colorId: 4 },
+      { shape: [[1,1],[1,1]], colorId: 2 },
     ];
-    let showIndex = 0;
+    let stackShapeIndex = 0;
 
     const COLS = 10, ROWS = 18;
 
-    const TET = {
+    const STACK = {
       board: [],
       cur: null,
       score: 0,
       lines: 0,
       level: 1,
-      dropMs: 260,
-      moveMs: 120,
+      dropMs: 420,
+      moveMs: 160,
       accDrop: 0,
       accMove: 0,
-      pieceCount: 0,
-      lastCell: 0
+      pieceCount: 0
     };
 
-    function makeBoard(){
+    function makeStackBoard(){
       return Array.from({length: ROWS}, () => Array.from({length: COLS}, () => 0));
     }
-    function clone(m){ return m.map(r => r.slice()); }
 
-    function rotateCW(mat){
-      const H = mat.length;
-      const W = mat[0].length;
-      const res = Array.from({length: W}, () => Array.from({length: H}, () => 0));
-      for(let y=0; y<H; y++){
-        for(let x=0; x<W; x++){
-          res[x][H - 1 - y] = mat[y][x];
-        }
-      }
-      return res;
-    }
-    function applyRot(shape, times){
-      let s = clone(shape);
-      for(let i=0;i<times;i++) s = rotateCW(s);
-      return s;
-    }
-
-    function collides(piece, dx, dy, shape){
+    function stackCollides(piece, dx, dy, shape){
       for(let y=0; y<shape.length; y++){
         for(let x=0; x<shape[y].length; x++){
           if(!shape[y][x]) continue;
           const nx = piece.x + x + dx;
           const ny = piece.y + y + dy;
           if(nx < 0 || nx >= COLS || ny >= ROWS) return true;
-          if(ny >= 0 && TET.board[ny][nx] !== 0) return true;
+          if(ny >= 0 && STACK.board[ny][nx] !== 0) return true;
         }
       }
       return false;
     }
 
-    function merge(piece){
+    function stackMerge(piece){
       const s = piece.shape;
       for(let y=0; y<s.length; y++){
         for(let x=0; x<s[y].length; x++){
@@ -1073,104 +1045,101 @@
           const bx = piece.x + x;
           const by = piece.y + y;
           if(by >= 0 && by < ROWS && bx >= 0 && bx < COLS){
-            TET.board[by][bx] = piece.colorId;
+            STACK.board[by][bx] = piece.colorId;
           }
         }
       }
     }
 
-    function clearLines(){
+    function stackClearLines(){
       let cleared = 0;
       outer: for(let y=ROWS-1; y>=0; y--){
         for(let x=0; x<COLS; x++){
-          if(TET.board[y][x] === 0) continue outer;
+          if(STACK.board[y][x] === 0) continue outer;
         }
-        TET.board.splice(y, 1);
-        TET.board.unshift(Array.from({length: COLS}, () => 0));
+        STACK.board.splice(y, 1);
+        STACK.board.unshift(Array.from({length: COLS}, () => 0));
         cleared++;
         y++;
       }
       if(cleared){
-        TET.lines += cleared;
-        TET.score += (cleared === 1 ? 40 : cleared === 2 ? 120 : cleared === 3 ? 300 : 500);
-        TET.level = 1 + Math.floor(TET.lines / 8);
-        TET.dropMs = Math.max(150, 260 - (TET.level-1) * 10);
+        STACK.lines += cleared;
+        STACK.score += cleared * 25;
+        STACK.level = 1 + Math.floor(STACK.lines / 6);
+        STACK.dropMs = Math.max(320, 420 - (STACK.level-1) * 12);
       }
     }
 
-    function nextShowPiece(){
-      const s = SHOW_SEQ[showIndex % SHOW_SEQ.length];
-      showIndex++;
-      const base = SHAPES[s.key];
-      const shape = applyRot(base, s.r);
+    function nextStackPiece(){
+      const def = STACK_SHAPES[stackShapeIndex % STACK_SHAPES.length];
+      stackShapeIndex++;
+      const shape = def.shape.map(r => r.slice());
       const width = shape[0].length;
-      const x = Math.max(0, Math.min(COLS - width, s.x - Math.floor(width/2)));
+      const x = Math.max(0, Math.min(COLS - width, Math.floor((COLS - width) / 2)));
       return {
-        key: s.key,
         shape,
-        colorId: PIECE_COLOR[s.key] || 1,
+        colorId: def.colorId,
         x,
-        y: -2,
+        y: -1,
         targetX: x
       };
     }
 
-    function resetTetrisLoop(){
-      TET.board = makeBoard();
-      TET.score = 0;
-      TET.lines = 0;
-      TET.level = 1;
-      TET.dropMs = 260;
-      TET.accDrop = 0;
-      TET.accMove = 0;
-      TET.pieceCount = 0;
-      showIndex = 0;
-      TET.cur = nextShowPiece();
-      setStats(TET.score, TET.lines, TET.level);
+    function resetStackLoop(){
+      STACK.board = makeStackBoard();
+      STACK.score = 0;
+      STACK.lines = 0;
+      STACK.level = 1;
+      STACK.dropMs = 420;
+      STACK.accDrop = 0;
+      STACK.accMove = 0;
+      STACK.pieceCount = 0;
+      stackShapeIndex = 0;
+      STACK.cur = nextStackPiece();
+      setStats(STACK.score, STACK.lines, STACK.level);
     }
 
-    function stepTetris(dt){
-      TET.accMove += dt;
-      if(TET.accMove >= TET.moveMs){
-        TET.accMove = 0;
-        const p = TET.cur;
+    function stepStack(dt){
+      STACK.accMove += dt;
+      if(STACK.accMove >= STACK.moveMs){
+        STACK.accMove = 0;
+        const p = STACK.cur;
         if(p){
-          if(p.x < p.targetX && !collides(p, 1, 0, p.shape)) p.x += 1;
-          else if(p.x > p.targetX && !collides(p, -1, 0, p.shape)) p.x -= 1;
+          if(p.x < p.targetX && !stackCollides(p, 1, 0, p.shape)) p.x += 1;
+          else if(p.x > p.targetX && !stackCollides(p, -1, 0, p.shape)) p.x -= 1;
         }
       }
 
-      TET.accDrop += dt;
-      if(TET.accDrop >= TET.dropMs){
-        TET.accDrop = 0;
-        const p = TET.cur;
+      STACK.accDrop += dt;
+      if(STACK.accDrop >= STACK.dropMs){
+        STACK.accDrop = 0;
+        const p = STACK.cur;
         if(!p) return;
 
-        if(!collides(p, 0, 1, p.shape)){
+        if(!stackCollides(p, 0, 1, p.shape)){
           p.y += 1;
         } else {
-          merge(p);
-          clearLines();
-          TET.pieceCount += 1;
+          stackMerge(p);
+          stackClearLines();
+          STACK.pieceCount += 1;
 
-          if(TET.pieceCount >= 22 || TET.lines >= 10){
-            resetTetrisLoop();
+          if(STACK.pieceCount >= 28 || STACK.lines >= 12){
+            resetStackLoop();
             return;
           }
-          TET.cur = nextShowPiece();
+          STACK.cur = nextStackPiece();
         }
 
-        setStats(TET.score, TET.lines, TET.level);
+        setStats(STACK.score, STACK.lines, STACK.level);
       }
     }
 
-    function drawBoardToCanvas(){
+    function drawStackCanvas(){
       const w = demoCanvas.getBoundingClientRect().width;
       const h = demoCanvas.getBoundingClientRect().height;
 
       dctx.clearRect(0,0,w,h);
-
-      dctx.fillStyle = "rgba(0,0,0,.20)";
+      dctx.fillStyle = "rgba(0,0,0,.22)";
       dctx.fillRect(0,0,w,h);
 
       const cell = Math.floor(Math.min(w / COLS, h / ROWS));
@@ -1179,7 +1148,7 @@
       const ox = Math.floor((w - bw)/2);
       const oy = Math.floor((h - bh)/2);
 
-      dctx.strokeStyle = "rgba(255,255,255,.05)";
+      dctx.strokeStyle = "rgba(255,255,255,.04)";
       for(let x=0; x<=COLS; x++){
         dctx.beginPath();
         dctx.moveTo(ox + x*cell, oy);
@@ -1193,28 +1162,33 @@
         dctx.stroke();
       }
 
-      function drawCell(x,y,colorId){
+      function drawSignalCell(x, y, colorId){
         if(colorId === 0) return;
-        const px = ox + x*cell;
-        const py = oy + y*cell;
+        const px = ox + x*cell + cell/2;
+        const py = oy + y*cell + cell/2;
+        const r = (cell/2) - 2;
 
-        dctx.fillStyle = COLORS[colorId] || COLORS[1];
-        dctx.fillRect(px+1, py+1, cell-2, cell-2);
+        dctx.fillStyle = STACK_COLORS[colorId] || STACK_COLORS[1];
+        dctx.shadowColor = STACK_COLORS[colorId] || STACK_COLORS[1];
+        dctx.shadowBlur = 8;
+        dctx.beginPath();
+        dctx.arc(px, py, r, 0, Math.PI*2);
+        dctx.fill();
+        dctx.shadowBlur = 0;
 
-        dctx.fillStyle = "rgba(255,255,255,.10)";
-        dctx.fillRect(px+2, py+2, cell-4, Math.max(3, cell-8));
-
-        dctx.strokeStyle = "rgba(255,255,255,.10)";
-        dctx.strokeRect(px+1.5, py+1.5, cell-3, cell-3);
+        dctx.fillStyle = "rgba(255,255,255,.18)";
+        dctx.beginPath();
+        dctx.arc(px - r*0.2, py - r*0.2, r*0.35, 0, Math.PI*2);
+        dctx.fill();
       }
 
       for(let y=0; y<ROWS; y++){
         for(let x=0; x<COLS; x++){
-          drawCell(x,y,TET.board[y][x]);
+          drawSignalCell(x, y, STACK.board[y][x]);
         }
       }
 
-      const p = TET.cur;
+      const p = STACK.cur;
       if(p){
         for(let yy=0; yy<p.shape.length; yy++){
           for(let xx=0; xx<p.shape[yy].length; xx++){
@@ -1222,7 +1196,7 @@
             const bx = p.x + xx;
             const by = p.y + yy;
             if(by < 0) continue;
-            drawCell(bx, by, p.colorId);
+            drawSignalCell(bx, by, p.colorId);
           }
         }
       }
@@ -1626,11 +1600,11 @@
     }
 
     function renderStaticPreview(){
-      if(selectedDemo === "tetris"){
-        resetTetrisLoop();
-        for(let i=0;i<10;i++) stepTetris(70);
-        drawBoardToCanvas();
-        setStats(TET.score, TET.lines, TET.level);
+      if(selectedDemo === "stack"){
+        resetStackLoop();
+        for(let i=0;i<10;i++) stepStack(70);
+        drawStackCanvas();
+        setStats(STACK.score, STACK.lines, STACK.level);
       } else if(selectedDemo === "pipe"){
         initPipeDemo();
         pipeDemoDraw(0.1);
@@ -1652,10 +1626,10 @@
       const dt = ts - lastTs;
       lastTs = ts;
 
-      if(selectedDemo === "tetris"){
-        stepTetris(dt);
-        drawBoardToCanvas();
-        setStats(TET.score, TET.lines, TET.level);
+      if(selectedDemo === "stack"){
+        stepStack(dt);
+        drawStackCanvas();
+        setStats(STACK.score, STACK.lines, STACK.level);
       } else if(selectedDemo === "pipe"){
         pipeDemoDraw(ts/1000);
         setStats(PIPE_STATE.score, PIPE_STATE.dots.filter(d => d.collected).length, 1);
@@ -1696,7 +1670,7 @@
       runDemoBtn.textContent = "Stop";
       lastTs = 0;
 
-      if(selectedDemo === "tetris") resetTetrisLoop();
+      if(selectedDemo === "stack") resetStackLoop();
       else if(selectedDemo === "pipe") initPipeDemo();
       else if(selectedDemo === "blaster") initBlasterDemo();
       updateLights();
@@ -1727,7 +1701,7 @@
     });
 
     // init
-    resetTetrisLoop();
+    resetStackLoop();
     renderStaticPreview();
 
     // Ambient audio: try autoplay; when blocked (Chrome file://), prompt is already visible — one click starts sound
