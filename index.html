@@ -802,28 +802,7 @@
       </div>
 
       <div class="modalBody">
-        <p>
-          Enter your email to get early access. We'll only email you about Puzzlefi updates.
-          <b>We won't spam you</b> or sell your email to third parties.
-        </p>
-
-        <form class="modalForm" id="waitlistModalForm">
-          <input class="modalInput" type="email" id="waitlistEmail" placeholder="you@domain.com" required />
-
-          <label class="checkRow">
-            <input type="checkbox" id="waitlistConsent" required />
-            <span class="checkText">
-              I agree to the <a href="#" id="privacyLink">Privacy Policy</a> and <a href="#" id="termsLink">User Agreement</a>,
-              and I understand Puzzlefi will email me about early access and updates.
-            </span>
-          </label>
-
-          <div class="modalActions">
-            <span class="modalMsg" id="waitlistModalMsg" aria-live="polite"></span>
-            <button class="btn" type="button" id="waitlistCancel">Cancel</button>
-            <button class="btn primary" type="submit">Join waitlist</button>
-          </div>
-        </form>
+        <iframe class="airtable-embed" src="https://airtable.com/embed/appDqyxz8DVhC1za7/pagEDcmlsgxt9y54P/form" frameborder="0" onmousewheel="" width="100%" height="533" style="background: transparent; border: 1px solid rgba(255,255,255,.12); border-radius: 12px;"></iframe>
       </div>
     </div>
   </div>
@@ -862,20 +841,13 @@
     }
     drawStars();
 
-    // ===== Waitlist Modal Logic =====
+    // ===== Waitlist Modal Logic (Airtable embed) =====
     const modal = document.getElementById("waitlistModal");
     const modalClose = document.getElementById("waitlistClose");
-    const modalCancel = document.getElementById("waitlistCancel");
-    const modalForm = document.getElementById("waitlistModalForm");
-    const modalMsg = document.getElementById("waitlistModalMsg");
-    const modalEmail = document.getElementById("waitlistEmail");
-    const modalConsent = document.getElementById("waitlistConsent");
 
     function openWaitlistModal(){
       modal.classList.add("isOpen");
       modal.setAttribute("aria-hidden", "false");
-      modalMsg.textContent = "";
-      setTimeout(() => modalEmail.focus(), 60);
     }
     function closeWaitlistModal(){
       modal.classList.remove("isOpen");
@@ -890,7 +862,6 @@
     });
 
     modalClose.addEventListener("click", closeWaitlistModal);
-    modalCancel.addEventListener("click", closeWaitlistModal);
 
     modal.addEventListener("click", (e) => {
       if(e.target === modal) closeWaitlistModal();
@@ -900,45 +871,12 @@
       if(e.key === "Escape" && modal.classList.contains("isOpen")) closeWaitlistModal();
     });
 
-    document.getElementById("privacyLink").addEventListener("click", (e) => {
-      e.preventDefault();
-      alert("Privacy Policy placeholder — add a real page later.");
-    });
-    document.getElementById("termsLink").addEventListener("click", (e) => {
-      e.preventDefault();
-      alert("User Agreement placeholder — add a real page later.");
-    });
-    document.getElementById("privacyFooter").addEventListener("click", (e) => {
-      e.preventDefault();
-      alert("Privacy placeholder — add a real page later.");
-    });
-
-    modalForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      modalMsg.className = "modalMsg";
-
-      const email = modalEmail.value.trim();
-      const consent = modalConsent.checked;
-
-      if(!email){
-        modalMsg.textContent = "Please enter an email.";
-        modalMsg.classList.add("err");
-        return;
-      }
-      if(!consent){
-        modalMsg.textContent = "Please agree to the Privacy Policy and User Agreement.";
-        modalMsg.classList.add("err");
-        return;
-      }
-
-      modalMsg.textContent = "✔ You're on the waitlist (demo).";
-      modalMsg.classList.add("ok");
-
-      setTimeout(() => {
-        modalForm.reset();
-        closeWaitlistModal();
-      }, 1100);
-    });
+    const privacyLink = document.getElementById("privacyLink");
+    const termsLink = document.getElementById("termsLink");
+    const privacyFooter = document.getElementById("privacyFooter");
+    if(privacyLink) privacyLink.addEventListener("click", (e) => { e.preventDefault(); alert("Privacy Policy placeholder — add a real page later."); });
+    if(termsLink) termsLink.addEventListener("click", (e) => { e.preventDefault(); alert("User Agreement placeholder — add a real page later."); });
+    if(privacyFooter) privacyFooter.addEventListener("click", (e) => { e.preventDefault(); alert("Privacy placeholder — add a real page later."); });
 
     // ===== BOOT DEMO BACKGROUND (run/stop + 3 options) =====
     const demoCanvas = document.getElementById("demoCanvas");
