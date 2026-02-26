@@ -942,11 +942,19 @@
       5: { main: "rgba(79,70,229,.85)", glow: "rgba(79,70,229,.55)", dark: "rgba(50,45,180,.5)" }
     };
 
-    // Original simple shapes only: dot, short bar, small block (no tetrominoes)
+    // Original simple shapes only: longer bars / blocks (no classic tetromino set)
     const STACK_SHAPES = [
-      { shape: [[1]], colorId: 2 },
-      { shape: [[1,1]], colorId: 3 },
-      { shape: [[1],[1]], colorId: 4 },
+      // 3-long horizontal bar
+      { shape: [[1,1,1]], colorId: 2 },
+      // 3-tall vertical bar
+      { shape: [[1],[1],[1]], colorId: 3 },
+      // 2x3 rectangle
+      { shape: [[1,1,1],[1,1,1]], colorId: 4 },
+      // 4-long horizontal bar
+      { shape: [[1,1,1,1]], colorId: 3 },
+      // 4-tall vertical bar
+      { shape: [[1],[1],[1],[1]], colorId: 4 },
+      // slightly smaller 2x2 block for variety
       { shape: [[1,1],[1,1]], colorId: 2 },
     ];
     let stackShapeIndex = 0;
@@ -959,7 +967,7 @@
       score: 0,
       lines: 0,
       level: 1,
-      dropMs: 420,
+      dropMs: 340,
       moveMs: 160,
       accDrop: 0,
       accMove: 0,
@@ -1012,7 +1020,8 @@
         STACK.lines += cleared;
         STACK.score += cleared * 25;
         STACK.level = 1 + Math.floor(STACK.lines / 6);
-        STACK.dropMs = Math.max(320, 420 - (STACK.level-1) * 12);
+        // slightly speed up as you clear lines, but keep it calm
+        STACK.dropMs = Math.max(260, 340 - (STACK.level-1) * 15);
       }
     }
 
@@ -1036,7 +1045,7 @@
       STACK.score = 0;
       STACK.lines = 0;
       STACK.level = 1;
-      STACK.dropMs = 420;
+      STACK.dropMs = 340;
       STACK.accDrop = 0;
       STACK.accMove = 0;
       STACK.pieceCount = 0;
