@@ -810,7 +810,21 @@
       </div>
 
       <div class="modalBody">
-        <iframe class="airtable-embed" src="https://airtable.com/embed/appDqyxz8DVhC1za7/pagEDcmlsgxt9y54P/form" frameborder="0" onmousewheel="" width="100%" height="533" style="background: transparent; border: 1px solid rgba(255,255,255,.12); border-radius: 12px;"></iframe>
+        <iframe
+          class="airtable-embed"
+          src="https://airtable.com/embed/appDqyxz8DVhC1za7/pagEDcmlsgxt9y54P/form"
+          frameborder="0"
+          onmousewheel=""
+          width="100%"
+          height="533"
+          style="background: transparent; border: 1px solid rgba(255,255,255,.12); border-radius: 12px;"
+        ></iframe>
+        <p class="micro" style="margin-top:8px; text-align:center;">
+          If the form doesn&apos;t load, you can
+          <a href="https://airtable.com/appDqyxz8DVhC1za7/pagEDcmlsgxt9y54P/form" target="_blank" rel="noopener noreferrer">
+            open the waitlist form in a new tab
+          </a>.
+        </p>
       </div>
     </div>
   </div>
@@ -989,6 +1003,29 @@
         }
       }
       return false;
+    }
+
+    function rotateStackShapeCW(shape){
+      const rows = shape.length;
+      const cols = shape[0].length;
+      const res = Array.from({length: cols}, () => Array(rows).fill(0));
+      for(let y=0; y<rows; y++){
+        for(let x=0; x<cols; x++){
+          res[x][rows - 1 - y] = shape[y][x];
+        }
+      }
+      return res;
+    }
+    function rotateStackShapeCCW(shape){
+      const rows = shape.length;
+      const cols = shape[0].length;
+      const res = Array.from({length: cols}, () => Array(rows).fill(0));
+      for(let y=0; y<rows; y++){
+        for(let x=0; x<cols; x++){
+          res[cols - 1 - x][y] = shape[y][x];
+        }
+      }
+      return res;
     }
 
     function stackMerge(piece){
@@ -1179,8 +1216,13 @@
 
     // ===== Keyboard controls for interactive play =====
     document.addEventListener("keydown", (e) => {
-      if(!playing || paused) return;
       const key = e.key;
+      const isArrow = key === "ArrowUp" || key === "ArrowDown" || key === "ArrowLeft" || key === "ArrowRight";
+      // When any game is playing, capture arrow keys so the page doesn't scroll
+      if(isArrow && playing && !paused){
+        e.preventDefault();
+      }
+      if(!playing || paused) return;
 
       // Stack Signals controls
       if(selectedDemo === "stack"){
@@ -1203,6 +1245,28 @@
           if(!stackCollides(p, 0, 1, p.shape)){
             p.y += 1;
             setStats(STACK.score, STACK.lines, STACK.level);
+          }
+        } else if(key === "ArrowUp" || key === "w" || key === "W"){
+          e.preventDefault();
+          const rotated = rotateStackShapeCW(p.shape);
+          if(!stackCollides(p, 0, 0, rotated)){
+            p.shape = rotated;
+            const width = rotated[0].length;
+            if(p.x + width > COLS){
+              p.x = Math.max(0, COLS - width);
+              p.targetX = p.x;
+            }
+          }
+        } else if(key === "z" || key === "Z"){
+          e.preventDefault();
+          const rotated = rotateStackShapeCCW(p.shape);
+          if(!stackCollides(p, 0, 0, rotated)){
+            p.shape = rotated;
+            const width = rotated[0].length;
+            if(p.x + width > COLS){
+              p.x = Math.max(0, COLS - width);
+              p.targetX = p.x;
+            }
           }
         }
       }
@@ -1716,7 +1780,7 @@
       if(!gameHintEl) return;
       if(playing && !paused){
         gameHintEl.classList.add("playing");
-        if(selectedDemo === "stack") gameHintEl.textContent = "← → move   ↓ soft drop";
+        if(selectedDemo === "stack") gameHintEl.textContent = "← → move   ↓ soft drop   ↑/W rotate   Z rotate other way";
         else if(selectedDemo === "pipe") gameHintEl.textContent = "← → ↑ ↓ or W A S D to move. Avoid red orbs.";
         else gameHintEl.textContent = "← → or A D to move. Shoot the purple orbs.";
       } else {
